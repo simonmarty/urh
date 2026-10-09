@@ -1,0 +1,194 @@
+[build-system]
+requires = ["setuptools>=77", "cython>=3.0.11", "numpy<3.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "urh"
+description = "Universal Radio Hacker: investigate wireless protocols like a boss"
+readme = "README.md"
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Johannes Pohl", email = "Johannes.Pohl90@gmail.com" }]
+keywords = ["sdr", "radio", "reverse-engineering", "fuzzing", "protocol"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Telecommunications Industry",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Cython",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Communications :: Ham Radio",
+    "Topic :: Security",
+]
+dependencies = [
+    "numpy<3.0",
+    "psutil",
+    "PyQt6",
+    "cython",
+    "setuptools",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/jopohl/urh"
+Repository = "https://github.com/jopohl/urh"
+Issues = "https://github.com/jopohl/urh/issues"
+Changelog = "https://github.com/jopohl/urh/blob/master/data/CHANGELOG.md"
+
+[project.scripts]
+urh = "urh.main:main"
+urh_cli = "urh.cli.urh_cli:main"
+
+[dependency-groups]
+dev = [
+    "appdirs",
+    "packaging",
+    "pyinstaller",
+    "pytest",
+    "pytest-cov",
+    "pytest-xvfb",
+    "pillow; sys_platform == 'darwin'",
+    "pyvirtualdisplay==0.2.5; sys_platform == 'linux'",
+    "pywin32; sys_platform == 'win32'",
+]
+audio = [
+    "pyaudio; sys_platform != 'linux'",
+]
+lint = [
+    "ruff==0.16.10",
+    "mypy==1.18.2",
+]
+
+[tool.setuptools]
+zip-safe = false
+
+include-package-data = false
+
+[tool.setuptools.dynamic]
+version = { attr = "urh.version.VERSION" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["urh*"]
+exclude = ["*__pycache__*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"urh.cythonext" = ["*.pyx", "*.pxd"]
+"urh.dev.native.lib" = ["*.pyx", "*.pxd"]
+"urh.dev.native.lib.shared" = ["*.dll", "*.txt"]
+
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
+skip = "*-musllinux_*"
+build-frontend = "build"
+test-command = "python -c \"import urh.cythonext.signal_functions, urh.cythonext.auto_interpretation, urh.cythonext.awre_util, urh.cythonext.util\""
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+manylinux-x86_64-image = "jopohl/urh_manylinux2_34_x86_64:2025.12.07-2"
+
+[tool.cibuildwheel.macos]
+archs = ["native"]
+before-all = "data/ci/install_sdr_libs.sh"
+
+[tool.cibuildwheel.windows]
+archs = ["native"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-s -v"
+
+[tool.coverage.run]
+source = ["src/urh"]
+concurrency = ["multiprocessing"]
+omit = [
+    "src/urh/tests/*",
+    "*/__init__.py",
+    "src/urh/cythonext/*",
+    "src/urh/dev/*",
+    "src/urh/ui/xtra_icons_rc.py",
+    "src/urh/main.py",
+    "src/urh/util/Errors.py",
+    "src/urh/plugins/RfCat/RfCatPlugin.py",
+]
+
+[tool.coverage.report]
+sort = "Miss"
+exclude_lines = [
+    "pragma: no cover",
+    "def paint",
+    "def draw_indicator",
+    "def mousePressEvent",
+    "def mouseMoveEvent",
+    "def mouseReleaseEvent",
+    "def contextMenuEvent",
+    "def on_import_samples_from_csv_action_triggered",
+    "def show_open_dialog",
+    "def on_btn_choose_python2_interpreter_clicked",
+    "def on_btn_choose_gnuradio_directory_clicked",
+    "def on_new_project_action_triggered",
+    "def on_label_non_project_mode_link_activated",
+    "raise NotImplementedError",
+    "class SectionItemDelegate",
+    "class SectionComboBox",
+    "def createEditor",
+    "def updateEditorGeometry",
+    "def on_export_fta_wanted",
+    "def export_to_fta",
+    "def export_demodulated",
+    "def main",
+    "class DeviceOptionsTableModel",
+    "if __name__ == \"__main__\"",
+]
+
+[tool.ruff]
+target-version = "py310"
+extend-exclude = [
+    "src/urh/ui/ui_*.py",
+    "src/urh/ui/xtra_icons_rc.py",
+    "src/urh/dev/gr/scripts/*",
+]
+
+[tool.ruff.lint]
+select = [
+    "F",   # pyflakes
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "UP",  # pyupgrade
+    "C4",  # flake8-comprehensions
+    "PIE", # flake8-pie
+    "RSE", # flake8-raise
+]
+ignore = [
+    "E501", # line length
+    "E741", # ambiguous variable names
+]
+
+[tool.ruff.lint.per-file-ignores]
+"setup.py" = ["E402"]
+"src/urh/cli/urh_cli.py" = ["E402"]
+"tests/device/*" = ["E402"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/urh/util", "src/urh/cli", "src/urh/plugins"]
+follow_imports = "skip"
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_redundant_casts = true
+no_implicit_optional = true
+warn_unreachable = false
+
+[[tool.mypy.overrides]]
+module = ["urh.ui.ui_*"]
+ignore_errors = true

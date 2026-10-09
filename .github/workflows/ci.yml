@@ -6,121 +6,233 @@ env:
 on:
   push:
     branches: [ master ]
-    tags: [ "v*" ]
     paths-ignore:
       - '**/README.md'
   pull_request:
     branches: [ master ]
     paths-ignore:
       - '**/README.md'
+  workflow_call:
 
 jobs:
-  ci:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: '3.12'
+          enable-cache: true
+
+      - name: Install linters
+        run: uv sync --locked --only-group lint
+
+      - name: ruff format
+        run: uv run --no-sync ruff format --check --diff .
+
+      - name: ruff check
+        run: uv run --no-sync ruff check --output-format=github .
+
+      - name: mypy
+        run: uv run --no-sync mypy
+
+  test:
+    name: Test (${{ matrix.os }}, py${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
-        architecture: [x64]
         include:
           - os: windows-latest
             python-version: '3.13'
-            architecture: x64
+          - os: macos-latest
+            python-version: '3.13'
           - os: macos-15-intel
             python-version: '3.13'
-            architecture: x64
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           python-version: ${{ matrix.python-version }}
-          architecture: ${{ matrix.architecture }}
+          enable-cache: true
 
-      - name: Setup SDR Drivers (Windows)
+      - name: Setup SDR drivers (Windows)
         if: startsWith(matrix.os, 'windows')
         run: |
           choco install wget --no-progress
-          wget -nv -O windrivers.zip https://github.com/jopohl/sdrbuild/releases/download/v1.1/win-$ARCH.zip
+          wget -nv -O windrivers.zip https://github.com/jopohl/sdrbuild/releases/download/v1.1/win-x64.zip
           7z x windrivers.zip -osrc/urh/dev/native/lib/shared
           ls src/urh/dev/native/lib/shared
         shell: bash
-        env:
-          ARCH: ${{ matrix.architecture }}
 
-      - name: Install Dependencies
-        run: |
-          pip install wheel
-          pip install -r data/requirements.txt
-          if [[ $OS == ubuntu* ]]
-          then
-            sudo apt-get update
-            sudo apt-get install libhackrf-dev librtlsdr-dev xvfb libxkbcommon-x11-0 x11-utils libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libegl1 libxcb-cursor0
-            pip install PyVirtualDisplay==0.2.5
-          elif [[ $OS == windows* ]]
-          then
-            pip install pywin32 pyaudio
-          elif [[ $OS == mac* ]] 
-          then
-            brew install airspy hackrf librtlsdr libbladerf limesuite portaudio uhd
-            
-            wget -nv https://github.com/analogdevicesinc/libiio/releases/download/v0.23/macOS-10.15.pkg
-            sudo installer -pkg macOS-10.15.pkg -target /
-            sudo cp /Library/Frameworks/iio.framework/iio /usr/local/lib/libiio.dylib
-            sudo install_name_tool -id "/usr/local/lib/libiio.dylib" /usr/local/lib/libiio.dylib
-            file /usr/local/lib/libiio.dylib
-            otool -L /usr/local/lib/libiio.dylib
-            sudo cp /Library/Frameworks/iio.framework/Versions/0.23/Headers/iio.h /usr/local/include
-            
-            wget -nv https://www.sdrplay.com/software/SDRplay_RSP_API-MacOSX-2.13.2.pkg
-            sudo installer -pkg SDRplay_RSP_API-MacOSX-2.13.2.pkg -target /  
-          
-            pip install pyaudio
-            pip install pillow
-          fi
-          pip install twine setuptools pytest pytest-xvfb pytest-cov appdirs packaging pyinstaller
-          python -c "import tempfile, os; open(os.path.join(tempfile.gettempdir(), 'urh_releasing'), 'w').close()"
+      - name: Install native SDR libraries
+        run: data/ci/install_sdr_libs.sh
         shell: bash
-        env:
-          OS: ${{ matrix.os }}
 
-      - name: Build Cython Extensions
-        run: python src/urh/cythonext/build.py
+      - name: Install dependencies and build Cython extensions
+        run: uv sync --locked --group audio
 
-      - name: Create sdist
+      - name: Run pytest with coverage
         if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.python-version == '3.12' }}
-        run: python setup.py sdist
-
-      - run: python setup.py bdist_wheel
-        if: ${{ !startsWith(matrix.os, 'ubuntu') }}
-
-      - name: Build manylinux wheels
-        if: startsWith(matrix.os, 'ubuntu')
         run: |
-          docker run --rm \
-          -e PYVER=$(python -c "import sys; print('cp{0}{1}-cp{0}{1}'.format(sys.version_info.major, sys.version_info.minor))") \
-          -v `pwd`:/io jopohl/urh_manylinux2_34_x86_64:2025.12.07-2 /io/data/make_manylinux_wheels.sh
+          touch tests/show_gui
+          uv run pytest --junitxml=junit/test-results.xml --cov --cov-report=xml --cov-report=html tests
 
-      - name: Check wheel
-        if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          pip install dist/*.whl
-          urh --version
-          xvfb-run urh autoclose
-          python data/check_native_backends.py
+      - name: Run pytest
+        if: ${{ !(startsWith(matrix.os, 'ubuntu') && matrix.python-version == '3.12') }}
+        run: uv run pytest --junitxml=junit/test-results.xml tests
 
-      - name: Build .exe Installer
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: junit/test-results.xml
+
+  sdist:
+    name: Build sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: '3.12'
+          enable-cache: true
+
+      - name: Build sdist
+        run: uv build --sdist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist-sdist
+          path: dist/*.tar.gz
+
+  wheels:
+    name: Wheels (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - name: linux-x86_64
+            os: ubuntu-latest
+          - name: macos-arm64
+            os: macos-latest
+          - name: macos-x86_64
+            os: macos-15-intel
+          - name: windows-x86_64
+            os: windows-latest
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup SDR drivers (Windows)
         if: startsWith(matrix.os, 'windows')
         run: |
-          python data/pyinstaller_helper.py
-          for /f %%i in ('python src/urh/version.py') do set URHVERSION=%%i
-          iscc /dMyAppVersion=%URHVERSION% /dArch=%PYARCH% data/inno.iss
+          choco install wget --no-progress
+          wget -nv -O windrivers.zip https://github.com/jopohl/sdrbuild/releases/download/v1.1/win-x64.zip
+          7z x windrivers.zip -osrc/urh/dev/native/lib/shared
+          ls src/urh/dev/native/lib/shared
+        shell: bash
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.2.0
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist-wheels-${{ matrix.name }}
+          path: wheelhouse/*.whl
+
+  check-wheel:
+    name: Smoke test Linux wheel
+    runs-on: ubuntu-latest
+    needs: wheels
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: '3.12'
+          enable-cache: true
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: dist-wheels-linux-x86_64
+          path: dist
+
+      - name: Install GUI runtime libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libxkbcommon-x11-0 x11-utils libxcb-icccm4 \
+            libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
+            libxcb-xinerama0 libegl1 libxcb-cursor0 libhackrf0 librtlsdr0
+
+      - name: Install and run the wheel
+        run: |
+          uv venv --python 3.12 /tmp/wheelcheck
+          uv pip install --python /tmp/wheelcheck dist/urh-*-cp312-*.whl
+          /tmp/wheelcheck/bin/urh --version
+          xvfb-run /tmp/wheelcheck/bin/urh autoclose
+          /tmp/wheelcheck/bin/python data/check_native_backends.py
+
+  installers:
+    name: Installer (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - name: windows-exe
+            os: windows-latest
+          - name: macos-arm64-dmg
+            os: macos-latest
+          - name: macos-x86_64-dmg
+            os: macos-15-intel
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: '3.13'
+          enable-cache: true
+
+      - name: Setup SDR drivers (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          choco install wget --no-progress
+          wget -nv -O windrivers.zip https://github.com/jopohl/sdrbuild/releases/download/v1.1/win-x64.zip
+          7z x windrivers.zip -osrc/urh/dev/native/lib/shared
+          ls src/urh/dev/native/lib/shared
+        shell: bash
+
+      - name: Install native SDR libraries
+        if: startsWith(matrix.os, 'macos')
+        run: data/ci/install_sdr_libs.sh
+        shell: bash
+
+      - name: Install dependencies and build Cython extensions
+        run: uv sync --locked --group audio
+
+      - name: Build .exe installer
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          uv run python data/pyinstaller_helper.py
+          for /f %%i in ('uv run python src/urh/version.py') do set URHVERSION=%%i
+          iscc /dMyAppVersion=%URHVERSION% /dArch=x64 data/inno.iss
         shell: cmd
-        env:
-          PYARCH: ${{ matrix.architecture }}
 
       - name: Check urh_debug.exe
         if: startsWith(matrix.os, 'windows')
@@ -133,55 +245,17 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         run: |
           cp data/pyinstaller_macos.spec urh.spec
-          pyinstaller --clean --distpath ./pyinstaller --workpath ./urh_build urh.spec
+          uv run pyinstaller --clean --distpath ./pyinstaller --workpath ./urh_build urh.spec
           mkdir -p dist
           cat pyinstaller/main.app/Contents/Info.plist
           hdiutil create -volname Universal.Radio.Hacker \
                          -srcfolder pyinstaller/main.app \
                          -ov -format UDZO \
-                         dist/Universal.Radio.Hacker-"$(python src/urh/version.py)".dmg
+                         "dist/Universal.Radio.Hacker-$(uv run python src/urh/version.py)-$(uname -m).dmg"
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: dist-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.architecture }}
-          path: dist
-
-      - name: Run pytest with coverage
-        if: ${{ startsWith(matrix.os, 'ubuntu') && matrix.python-version == '3.12' }}
-        run: |
-          touch tests/show_gui
-          cp tests/.coveragerc .
-          pytest -s -v --junitxml=junit/test-results.xml --cov=src --cov-config=.coveragerc tests
-          coverage xml
-          coverage html
-
-      - name: Run pytest without coverage
-        if: ${{ !startsWith(matrix.os, 'ubuntu') || matrix.python-version != '3.12' }}
-        run: pytest -s -v --junitxml=junit/test-results.xml tests
-
-      - uses: ncipollo/release-action@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          artifacts: "dist/*.exe,dist/*.dmg"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          generateReleaseNotes: true
-          omitBodyDuringUpdate: true
-          omitNameDuringUpdate: true
-
-      - name: Upload to PyPi
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          if [[ $OS == ubuntu* ]]
-          then
-            twine upload --skip-existing dist/*
-          else
-            twine upload --skip-existing dist/*.whl
-          fi
-        shell: bash
-        env:
-          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-          TWINE_REPOSITORY_URL: "https://upload.pypi.org/legacy/"
-          OS: ${{ matrix.os }}
+          name: dist-installer-${{ matrix.name }}
+          path: |
+            dist/*.exe
+            dist/*.dmg

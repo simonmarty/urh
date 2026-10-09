@@ -86,7 +86,7 @@ class ModulationSettingsWidget(QWidget):
     @pyqtSlot()
     def refresh_modulators_from_dialog(self):
         current_index = 0
-        if type(self.sender()) == ModulatorDialog:
+        if type(self.sender()) is ModulatorDialog:
             current_index = self.sender().ui.comboBoxCustomModulations.currentIndex()
 
         self.ui.comboBoxModulationProfiles.clear()

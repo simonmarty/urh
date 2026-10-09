@@ -1,17 +1,10 @@
-import os
 import sys
-import time
 
 # from subprocess import PIPE, Popen
 # from threading import Thread
 
-import numpy as np
-from PyQt6.QtCore import pyqtSignal
 
-from urh import settings
 from urh.plugins.Plugin import SDRPlugin
-from urh.signalprocessing.Message import Message
-from urh.util.Errors import Errors
 from urh.util.Logger import logger
 
 
@@ -104,7 +97,7 @@ class FlipperZeroSubPlugin(SDRPlugin):
             signal.append(current_count if current_value == 1 else -current_count)
 
         # Write signal
-        sps = messages[0].samples_per_symbol
+        messages[0].samples_per_symbol
         for i in range(len(signal)):
             if 0 == i % self.max_values_per_line:
                 file.write("\nRAW_Data:")

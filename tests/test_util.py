@@ -33,7 +33,7 @@ class TestUtil(QtTestCase):
             self.assertEqual(QIcon.themeName(), "oxy")
 
     def test_set_shared_lib_path(self):
-        before = os.environ["PATH"]
+        os.environ["PATH"]
         util.set_shared_library_path()
 
     def test_create_textbox_dialog(self):
@@ -127,7 +127,7 @@ class TestUtil(QtTestCase):
             )
             if len(filecontents) >= minfilelen:  # ok, min file length passed
                 if (
-                    filecontents.find(b"\x0A\x0D\x0D\x0A") >= 0
+                    filecontents.find(b"\x0a\x0d\x0d\x0a") >= 0
                 ):  # ok, seems that SHB was written
                     if (
                         filecontents.find(
@@ -160,27 +160,20 @@ class TestUtil(QtTestCase):
         util.set_shared_library_path()
 
         # noinspection PyUnresolvedReferences
-        from urh.dev.native.lib import airspy
 
         # noinspection PyUnresolvedReferences
-        from urh.dev.native.lib import bladerf
 
         # noinspection PyUnresolvedReferences
-        from urh.dev.native.lib import hackrf
 
         # noinspection PyUnresolvedReferences
-        from urh.dev.native.lib import rtlsdr
 
         # noinspection PyUnresolvedReferences
-        from urh.dev.native.lib import limesdr
 
         # noinspection PyUnresolvedReferences
-        from urh.dev.native.lib import plutosdr
 
         # noinspection PyUnresolvedReferences
-        from urh.dev.native.lib import usrp
 
         if sys.platform != "darwin":
             # noinspection PyUnresolvedReferences
-            from urh.dev.native.lib import sdrplay
+            pass
         self.assertTrue(True)

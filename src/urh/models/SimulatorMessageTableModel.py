@@ -41,8 +41,8 @@ class SimulatorMessageTableModel(TableModel):
             participant_name = msg.participant.shortname if msg.participant else "?"
             destination_name = msg.destination.shortname if msg.destination else "?"
 
-            self.vertical_header_text[i] = "{0} ({1} -> {2})".format(
-                msg.index(), participant_name, destination_name
+            self.vertical_header_text[i] = (
+                f"{msg.index()} ({participant_name} -> {destination_name})"
             )
 
     def delete_range(

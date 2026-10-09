@@ -4,7 +4,6 @@ from PyQt6.QtGui import QIcon, QCloseEvent
 
 from urh.controller.dialogs.SendRecvDialog import SendRecvDialog
 from urh.controller.widgets.SniffSettingsWidget import SniffSettingsWidget
-from urh.ui.painting.LiveSceneManager import LiveSceneManager
 from urh.ui.painting.SniffSceneManager import SniffSceneManager
 from urh.util import util
 

@@ -35,7 +35,7 @@ class RTLSDR(Device):
         # identifier gets set in self.receive_process_arguments
         device_number = int(device_identifier)
         ret = rtlsdr.open(device_number)
-        ctrl_connection.send("OPEN (#{}):{}".format(device_number, ret))
+        ctrl_connection.send(f"OPEN (#{device_number}):{ret}")
         return ret == 0
 
     @classmethod

@@ -14,7 +14,6 @@ from PyQt6.QtWidgets import QDialog, QMessageBox, QLineEdit
 from urh import settings
 from urh.controller.dialogs.ModulationParametersDialog import ModulationParametersDialog
 from urh.signalprocessing.Modulator import Modulator
-from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 from urh.ui.ui_modulation import Ui_DialogModulation
 from urh.util.Logger import logger
 
@@ -71,7 +70,7 @@ class ModulatorDialog(QDialog):
 
         self.create_connects()
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
         self.set_bits_per_symbol_enabled_status()
@@ -119,9 +118,7 @@ class ModulatorDialog(QDialog):
 
     def closeEvent(self, event: QCloseEvent):
         self.ui.lineEditParameters.editingFinished.emit()
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
 
         for gv in (
             self.ui.gVCarrier,
@@ -330,7 +327,7 @@ class ModulatorDialog(QDialog):
         frequencies = []
         try:
             if not self.current_modulator.is_binary_modulation:
-                raise NotImplementedError()
+                raise NotImplementedError
 
             zero_freq = self.protocol.estimate_frequency_for_zero(
                 self.current_modulator.sample_rate
@@ -727,7 +724,7 @@ class ModulatorDialog(QDialog):
             try:
                 parameters.append(factor * float(param))
             except ValueError:
-                logger.warning("Could not convert {} to number".format(param))
+                logger.warning(f"Could not convert {param} to number")
                 return
 
         self.current_modulator.parameters[:] = array("f", parameters)

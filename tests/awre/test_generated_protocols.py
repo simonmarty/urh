@@ -26,7 +26,7 @@ class TestGeneratedProtocols(AWRETestCase):
             for i in indices:
                 messages[i].message_type = msg_type
 
-        participants = list(set(m.participant for m in messages))
+        participants = list({m.participant for m in messages})
         for p in participants:
             p.address_hex = ""
         AutoAssigner.auto_assign_participant_addresses(messages, participants)

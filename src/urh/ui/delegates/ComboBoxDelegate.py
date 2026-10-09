@@ -49,7 +49,7 @@ class ComboBoxDelegate(QStyledItemDelegate):
                 painter.fillRect(
                     rect, QColor(color.red(), color.green(), color.blue(), 255)
                 )
-            except:
+            except Exception:
                 super().paint(painter, option, index)
         else:
             super().paint(painter, option, index)

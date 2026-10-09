@@ -1,6 +1,5 @@
 from tests.QtTestCase import QtTestCase
 from urh.controller.MainController import MainController
-from urh.controller.widgets.SignalFrame import SignalFrame
 
 
 class TestAdvancedModulationSettings(QtTestCase):
@@ -20,9 +19,7 @@ class TestAdvancedModulationSettings(QtTestCase):
         assert isinstance(self.form, MainController)
         self.form.ui.actionAuto_detect_new_signals.setChecked(False)
         self.add_signal_to_form("pwm.complex16s")
-        signal_frame = self.form.signal_tab_controller.signal_frames[
-            0
-        ]  # type: SignalFrame
+        signal_frame = self.form.signal_tab_controller.signal_frames[0]  # type: SignalFrame
         signal_frame.ui.spinBoxNoiseTreshold.setValue(0.0525)
         signal_frame.ui.cbModulationType.setCurrentText("ASK")
         signal_frame.ui.spinBoxCenterOffset.setValue(0.01807)

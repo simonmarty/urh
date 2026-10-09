@@ -1,5 +1,4 @@
 import array
-import copy
 import math
 import xml.etree.ElementTree as ET
 
@@ -14,7 +13,7 @@ from urh.util.Formatter import Formatter
 from urh.util.Logger import logger
 
 
-class Message(object):
+class Message:
     """
     A protocol message is a single line of a protocol.
     """
@@ -85,9 +84,7 @@ class Message(object):
         self.absolute_time = 0  # set in Compare Frame
         self.relative_time = 0  # set in Compare Frame
 
-        self.__decoder = (
-            decoder if decoder else Encoding(["Non Return To Zero (NRZ)"])
-        )  # type: Encoding
+        self.__decoder = decoder if decoder else Encoding(["Non Return To Zero (NRZ)"])  # type: Encoding
 
         self.align_labels = True
         self.fuzz_created = fuzz_created
@@ -320,7 +317,7 @@ class Message(object):
 
     @property
     def plain_hex_str(self) -> str:
-        return "".join(map(lambda h: "{0:x}".format(h), self.plain_hex_array))
+        return "".join(f"{h:x}" for h in self.plain_hex_array)
 
     @property
     def plain_ascii_array(self) -> array.array:
@@ -338,7 +335,7 @@ class Message(object):
 
     @property
     def decoded_hex_str(self) -> str:
-        return "".join(map(lambda h: "{0:x}".format(h), self.decoded_hex_array))
+        return "".join(f"{h:x}" for h in self.decoded_hex_array)
 
     @property
     def decoded_ascii_array(self) -> array.array:
@@ -540,17 +537,17 @@ class Message(object):
             return None
 
         if show_pauses:
-            return "%s %s" % (proto, self.get_pause_str(sample_rate))
+            return f"{proto} {self.get_pause_str(sample_rate)}"
         else:
             return proto
 
     def get_pause_str(self, sample_rate):
         if sample_rate:
-            return " [<b>Pause:</b> %s]" % (
-                Formatter.science_time(self.pause / sample_rate)
+            return (
+                f" [<b>Pause:</b> {Formatter.science_time(self.pause / sample_rate)}]"
             )
         else:
-            return " [<b>Pause:</b> %d samples]" % (self.pause)
+            return f" [<b>Pause:</b> {int(self.pause)} samples]"
 
     def clear_decoded_bits(self):
         self.__decoded_bits = None
@@ -567,8 +564,8 @@ class Message(object):
 
     @staticmethod
     def from_plain_hex_str(hex_str, pause=0):
-        lut = {"{0:x}".format(i): "{0:04b}".format(i) for i in range(16)}
-        bits = "".join((lut[h] for h in hex_str))
+        lut = {f"{i:x}": f"{i:04b}" for i in range(16)}
+        bits = "".join(lut[h] for h in hex_str)
         return Message.from_plain_bits_str(bits, pause)
 
     def to_xml(
@@ -588,7 +585,7 @@ class Message(object):
                 decoding_index = decoders.index(self.decoder)
             except ValueError:
                 logger.warning(
-                    "Failed to find '{}' in list of decodings".format(self.decoder.name)
+                    f"Failed to find '{self.decoder.name}' in list of decodings"
                 )
                 decoding_index = 0
             root.set("decoding_index", str(decoding_index))
@@ -619,9 +616,7 @@ class Message(object):
         if part_id:
             self.participant = Participant.find_matching(part_id, participants)
             if self.participant is None:
-                logger.warning(
-                    "No participant matched the id {0} from xml".format(part_id)
-                )
+                logger.warning(f"No participant matched the id {part_id} from xml")
 
         if message_type_id and message_types:
             for message_type in message_types:

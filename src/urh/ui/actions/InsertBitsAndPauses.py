@@ -18,7 +18,7 @@ class InsertBitsAndPauses(QUndoCommand):
         if self.index == -1 or self.index > len(self.proto_analyzer_container.messages):
             self.index = len(self.proto_analyzer_container.messages)
 
-        self.setText("Insert data at index {0:d}".format(self.index))
+        self.setText(f"Insert data at index {self.index:d}")
         self.num_messages = 0
 
     def redo(self):

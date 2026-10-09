@@ -60,9 +60,7 @@ def go():
         y_pos += pixmap.height()
         graphic_view.fitInView(scene.sceneRect())
         status_label.setText(
-            "Height: {0:.0f} // Speed: {1:.2f}  // Total Time: {2:.2f}".format(
-                scene.sceneRect().height(), 1 / (time.time() - speed), time.time() - t
-            )
+            f"Height: {scene.sceneRect().height():.0f} // Speed: {1 / (time.time() - speed):.2f}  // Total Time: {time.time() - t:.2f}"
         )
         QApplication.processEvents()
 

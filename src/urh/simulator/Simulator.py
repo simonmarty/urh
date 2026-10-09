@@ -12,8 +12,6 @@ from urh.dev.BackendHandler import BackendHandler, Backends
 from urh.dev.EndlessSender import EndlessSender
 from urh.signalprocessing.ChecksumLabel import ChecksumLabel
 from urh.signalprocessing.Message import Message
-from urh.signalprocessing.Modulator import Modulator
-from urh.signalprocessing.Participant import Participant
 from urh.signalprocessing.ProtocolSniffer import ProtocolSniffer
 from urh.simulator.SimulatorConfiguration import SimulatorConfiguration
 from urh.simulator.SimulatorCounterAction import SimulatorCounterAction
@@ -125,9 +123,7 @@ class Simulator(QObject):
         self.simulation_stopped.emit()
 
         if self.is_simulating:
-            self.log_message(
-                "Stop simulation" + (" ({})".format(msg.strip()) if msg else "")
-            )
+            self.log_message("Stop simulation" + (f" ({msg.strip()})" if msg else ""))
             self.is_simulating = False
             self.do_restart = False
             self.simulation_thread.join(2.5)
@@ -255,7 +251,7 @@ class Simulator(QObject):
             elif isinstance(self.current_item, SimulatorTriggerCommandAction):
                 next_item = self.current_item.next()
                 command = self.__fill_counter_values(self.current_item.command)
-                self.log_message("Calling {}".format(command))
+                self.log_message(f"Calling {command}")
                 if self.current_item.pass_transcript:
                     transcript = "\n".join(
                         self.transcript.get_for_all_participants(all_rounds=False)
@@ -305,9 +301,7 @@ class Simulator(QObject):
             elif isinstance(self.current_item, SimulatorCounterAction):
                 self.current_item.progress_value()
                 self.log_message(
-                    "Increase counter by {} to {}".format(
-                        self.current_item.step, self.current_item.value
-                    )
+                    f"Increase counter by {self.current_item.step} to {self.current_item.value}"
                 )
                 next_item = self.current_item.next()
 
@@ -317,7 +311,7 @@ class Simulator(QObject):
                 self.transcript.start_new_round()
 
             else:
-                raise ValueError("Unknown action {}".format(type(self.current_item)))
+                raise ValueError(f"Unknown action {type(self.current_item)}")
 
             self.current_item = next_item
 
@@ -365,7 +359,7 @@ class Simulator(QObject):
             self.last_sent_message = msg
         else:
             # we have to receive a message
-            self.log_message("Waiting for message {}...".format(msg.index()))
+            self.log_message(f"Waiting for message {msg.index()}...")
             sniffer = self.sniffer
             if sniffer is None:
                 self.log_message("Fatal: No sniffer configured")
@@ -380,7 +374,7 @@ class Simulator(QObject):
                 and retry < max_retries
             ):
                 received_msg = self.receive_message(sniffer)
-                self.log_message("  Received {} data bits".format(len(received_msg)))
+                self.log_message(f"  Received {len(received_msg)} data bits")
 
                 if not self.is_simulating:
                     return
@@ -445,7 +439,7 @@ class Simulator(QObject):
         self, received_msg, expected_msg, retry: int, msg_index: int
     ) -> (bool, str):
         if len(received_msg.decoded_bits) == 0:
-            return False, "Failed to decode message {}".format(msg_index)
+            return False, f"Failed to decode message {msg_index}"
 
         for lbl in received_msg.message_type:
             if lbl.value_type_index in (1, 4):
@@ -468,13 +462,11 @@ class Simulator(QObject):
             if actual != expected:
                 log_msg = []
                 log_msg.append(
-                    "Attempt for message {} [{}/{}]".format(
-                        msg_index, retry + 1, self.project_manager.simulator_retries
-                    )
+                    f"Attempt for message {msg_index} [{retry + 1}/{self.project_manager.simulator_retries}]"
                 )
                 log_msg.append(
                     HTMLFormatter.indent_string(
-                        "Mismatch for label: <b>{}</b>".format(lbl.name)
+                        f"Mismatch for label: <b>{lbl.name}</b>"
                     )
                 )
                 expected_str = util.convert_bits_to_string(
@@ -611,9 +603,7 @@ class Simulator(QObject):
                         "B", (map(bool, map(int, result)))
                     )
                 except Exception as e:
-                    log_msg = "Could not assign {} to range because {}".format(
-                        result, e
-                    )
+                    log_msg = f"Could not assign {result} to range because {e}"
                     logger.error(log_msg)
 
                 continue
@@ -635,9 +625,7 @@ class Simulator(QObject):
 
         if len(bits) > lbl_len:
             logger.warning(
-                "Value {0} too big for label {1}, bits truncated".format(
-                    decimal_value, label.name
-                )
+                f"Value {decimal_value} too big for label {label.name}, bits truncated"
             )
 
         for i in range(lbl_len):

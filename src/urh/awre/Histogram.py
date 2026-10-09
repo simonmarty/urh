@@ -6,7 +6,7 @@ from urh.awre.CommonRange import CommonRange
 from urh.cythonext import awre_util
 
 
-class Histogram(object):
+class Histogram:
     """
     Create a histogram based on the equalness of vectors
     """
@@ -105,8 +105,8 @@ class Histogram(object):
         return self.__vectors[indices[0]][start : start + length]
 
     def __vector_to_string(self, data_vector) -> str:
-        lut = {i: "{0:x}".format(i) for i in range(16)}
-        return "".join(lut[x] if x in lut else " {} ".format(x) for x in data_vector)
+        lut = {i: f"{i:x}" for i in range(16)}
+        return "".join(lut[x] if x in lut else f" {x} " for x in data_vector)
 
     def plot(self):
         import matplotlib.pyplot as plt

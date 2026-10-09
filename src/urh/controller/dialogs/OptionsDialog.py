@@ -296,7 +296,7 @@ class OptionsDialog(QDialog):
 
         self.show_available_colormaps()
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
     def create_connects(self):
@@ -420,9 +420,9 @@ class OptionsDialog(QDialog):
         if self.old_default_view != self.ui.comboBoxDefaultView.currentIndex():
             changed_values["default_view"] = self.ui.comboBoxDefaultView.currentIndex()
         if self.old_num_sending_repeats != self.ui.spinBoxNumSendingRepeats.value():
-            changed_values[
-                "num_sending_repeats"
-            ] = self.ui.spinBoxNumSendingRepeats.value()
+            changed_values["num_sending_repeats"] = (
+                self.ui.spinBoxNumSendingRepeats.value()
+            )
 
         settings.write("default_view", self.ui.comboBoxDefaultView.currentIndex())
         settings.write("num_sending_repeats", self.ui.spinBoxNumSendingRepeats.value())
@@ -456,9 +456,7 @@ class OptionsDialog(QDialog):
 
         self.values_changed.emit(changed_values)
 
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
         super().closeEvent(event)
 
     def set_gnuradio_status(self):
@@ -490,7 +488,7 @@ class OptionsDialog(QDialog):
             }
 
             if selected_indices:
-                for i in reversed(sorted(selected_indices)):
+                for i in sorted(selected_indices, reverse=True):
                     self.field_type_table_model.field_types.pop(i)
             else:
                 self.field_type_table_model.field_types.pop()
@@ -610,19 +608,19 @@ class OptionsDialog(QDialog):
             self.ui.labelRebuildNativeStatus.setText(
                 self.tr(
                     "<font color=green>"
-                    "Rebuilt {0} device extensions. "
+                    f"Rebuilt {len(extensions)} device extensions. "
                     "</font>"
-                    "Please restart URH.".format(len(extensions))
+                    "Please restart URH."
                 )
             )
         else:
             self.ui.labelRebuildNativeStatus.setText(
                 self.tr(
                     "<font color='red'>"
-                    "Failed to rebuild {0} device extensions. "
+                    f"Failed to rebuild {len(extensions)} device extensions. "
                     "</font>"
                     "Run URH as root (<b>sudo urh</b>) "
-                    "and try again.".format(len(extensions))
+                    "and try again."
                 )
             )
 

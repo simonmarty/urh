@@ -32,7 +32,7 @@ def gen(force=False):
         time_ui_file = os.path.getmtime(file_path)
         try:
             time_generated_file = os.path.getmtime(out_file_path)
-        except os.error:
+        except OSError:
             time_generated_file = 0
 
         if time_generated_file >= time_ui_file and not force:
@@ -45,8 +45,11 @@ def gen(force=False):
         # to avoid useless git updates when working on another computer
         for line in fileinput.input(out_file_path, inplace=True):
             if line.startswith(
-                "# Form implementation generated from reading ui file"
-            ) or line.startswith("# Created by: "):
+                (
+                    "# Form implementation generated from reading ui file",
+                    "# Created by: ",
+                )
+            ):
                 continue
             if line.strip().startswith("QtCore.QMetaObject.connectSlotsByName("):
                 # disable auto slot connection, as we do not use it, and it causes crash on python 3.7
@@ -61,7 +64,7 @@ def gen(force=False):
         time_rc_file = os.path.getmtime(file_path)
         try:
             time_generated_file = os.path.getmtime(out_file_path)
-        except os.error:
+        except OSError:
             time_generated_file = 0
 
         if time_generated_file < time_rc_file or force:

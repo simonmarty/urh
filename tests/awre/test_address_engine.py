@@ -403,7 +403,7 @@ class TestAddressEngine(AWRETestCase):
 
         bitvectors = FormatFinder.get_bitvectors_from_messages(protocol.messages)
         hexvectors = FormatFinder.get_hexvectors(bitvectors)
-        address_engine = AddressEngine(
+        AddressEngine(
             hexvectors,
             participant_indices=[
                 participants.index(msg.participant) for msg in protocol.messages
@@ -441,15 +441,11 @@ class TestAddressEngine(AWRETestCase):
         self.assertEqual(str1[index : index + len(str2)], str2)
 
         # Test with ignoring indices
-        indices = awre_util.find_occurrences(
-            seq1, seq2, array("L", list(range(0, 205)))
-        )
+        indices = awre_util.find_occurrences(seq1, seq2, array("L", list(range(205))))
         self.assertEqual(len(indices), 1)
 
         # Test with ignoring indices
-        indices = awre_util.find_occurrences(
-            seq1, seq2, array("L", list(range(0, 210)))
-        )
+        indices = awre_util.find_occurrences(seq1, seq2, array("L", list(range(210))))
         self.assertEqual(len(indices), 0)
 
         self.assertEqual(

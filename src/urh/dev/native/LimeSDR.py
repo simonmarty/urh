@@ -49,7 +49,7 @@ class LimeSDR(Device):
         if not device_identifier:
             ctrl_connection.send("OPEN:" + str(ret))
         else:
-            ctrl_connection.send("OPEN ({}):{}".format(device_identifier, ret))
+            ctrl_connection.send(f"OPEN ({device_identifier}):{ret}")
         limesdr.disable_all_channels()
         if ret != 0:
             return False
@@ -78,15 +78,11 @@ class LimeSDR(Device):
 
         antennas = limesdr.get_antenna_list()
         ctrl_connection.send(
-            "Current normalized gain is {0:.2f}".format(limesdr.get_normalized_gain())
+            f"Current normalized gain is {limesdr.get_normalized_gain():.2f}"
         )
+        ctrl_connection.send(f"Current antenna is {antennas[limesdr.get_antenna()]}")
         ctrl_connection.send(
-            "Current antenna is {0}".format(antennas[limesdr.get_antenna()])
-        )
-        ctrl_connection.send(
-            "Current chip temperature is {0:.2f}°C".format(
-                limesdr.get_chip_temperature()
-            )
+            f"Current chip temperature is {limesdr.get_chip_temperature():.2f}°C"
         )
 
         return True
@@ -105,7 +101,7 @@ class LimeSDR(Device):
         ctrl_connection.send("Initializing stream...")
         limesdr.setup_stream(cls.RECV_FIFO_SIZE)
         ret = limesdr.start_stream()
-        ctrl_connection.send("Initialize stream:{0}".format(ret))
+        ctrl_connection.send(f"Initialize stream:{ret}")
         return ret
 
     @classmethod
@@ -119,7 +115,7 @@ class LimeSDR(Device):
         ctrl_connection.send("Initializing stream...")
         limesdr.setup_stream(cls.SEND_FIFO_SIZE)
         ret = limesdr.start_stream()
-        ctrl_connection.send("Initialize stream:{0}".format(ret))
+        ctrl_connection.send(f"Initialize stream:{ret}")
         return ret
 
     @classmethod

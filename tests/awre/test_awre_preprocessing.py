@@ -8,7 +8,6 @@ from urh.awre.ProtocolGenerator import ProtocolGenerator
 from urh.signalprocessing.FieldType import FieldType
 from urh.signalprocessing.Message import Message
 from urh.signalprocessing.Participant import Participant
-from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 import numpy as np
 
 
@@ -132,7 +131,7 @@ class TestAWREPreprocessing(AWRETestCase):
 
         for i in range(1, 256):
             messages = []
-            sync = "{0:02x}".format(i)
+            sync = f"{i:02x}"
             if sync.startswith("a"):
                 continue
 
@@ -277,8 +276,8 @@ class TestAWREPreprocessing(AWRETestCase):
         preamble_syncs: list, num_messages: tuple, data: tuple
     ) -> ProtocolGenerator:
         message_types = []
-        preambles_by_mt = dict()
-        syncs_by_mt = dict()
+        preambles_by_mt = {}
+        syncs_by_mt = {}
 
         assert len(preamble_syncs) == len(num_messages) == len(data)
 
@@ -288,7 +287,7 @@ class TestAWREPreprocessing(AWRETestCase):
 
             preamble, sync_word = map(ProtocolGenerator.to_bits, (preamble, sync_word))
 
-            mb = MessageTypeBuilder("message type #{0}".format(i))
+            mb = MessageTypeBuilder(f"message type #{i}")
             mb.add_label(FieldType.Function.PREAMBLE, len(preamble))
             mb.add_label(FieldType.Function.SYNC, len(sync_word))
 

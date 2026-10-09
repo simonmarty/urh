@@ -1,4 +1,4 @@
-class Interval(object):
+class Interval:
     __slots__ = ["data"]
 
     def __init__(self, start: int, end: int):
@@ -34,7 +34,7 @@ class Interval(object):
         return range(self.start, self.end)
 
     def __repr__(self):
-        return "{}-{}".format(self.start, self.end)
+        return f"{self.start}-{self.end}"
 
     def overlaps_with(self, other_interval) -> bool:
         return any(r in self.range() for r in other_interval.range())

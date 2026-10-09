@@ -44,7 +44,7 @@ class SimulatorGotoAction(SimulatorItem):
         return valid_targets
 
     def to_xml(self) -> ET.Element:
-        attributes = dict()
+        attributes = {}
         if self.goto_target is not None:
             attributes["goto_target"] = self.goto_target
 

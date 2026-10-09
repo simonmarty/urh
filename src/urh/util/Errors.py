@@ -9,7 +9,7 @@ from urh.util.Logger import logger
 
 class Errors:
     @staticmethod
-    def generic_error(title: str, msg: str, detailed_msg: str = None):
+    def generic_error(title: str, msg: str, detailed_msg: str | None = None):
         w = QWidget()
         if detailed_msg:
             msg = (
@@ -52,7 +52,7 @@ class Errors:
         QMessageBox.critical(
             w,
             w.tr("Write error"),
-            w.tr("There was a error writing this file! {0}".format(msg)),
+            w.tr(f"There was a error writing this file! {msg}"),
         )
 
     @staticmethod
@@ -61,7 +61,7 @@ class Errors:
         QMessageBox.critical(
             w,
             w.tr("USRP not found"),
-            w.tr("USRP could not be found . Is the IP " "correct?"),
+            w.tr("USRP could not be found . Is the IP correct?"),
         )
 
     @staticmethod
@@ -91,7 +91,7 @@ class Errors:
         QMessageBox.critical(
             w,
             w.tr("GNU Radio not found"),
-            w.tr("You need to install GNU Radio for this " "feature."),
+            w.tr("You need to install GNU Radio for this feature."),
         )
 
     @staticmethod
@@ -119,7 +119,7 @@ class Errors:
     def invalid_path(path: str):
         w = QWidget()
         QMessageBox.critical(
-            w, w.tr("Invalid Path"), w.tr("The path {0} is invalid.".format(path))
+            w, w.tr("Invalid Path"), w.tr(f"The path {path} is invalid.")
         )
 
     @staticmethod
@@ -137,10 +137,8 @@ class Errors:
         w = QWidget()
         if memory_size_bytes:
             msg = (
-                "Precaching all your modulated data would take <b>{0}B</b> of memory, "
-                "which does not fit into your RAM.<br>".format(
-                    Formatter.big_value_with_suffix(memory_size_bytes)
-                )
+                f"Precaching all your modulated data would take <b>{Formatter.big_value_with_suffix(memory_size_bytes)}B</b> of memory, "
+                "which does not fit into your RAM.<br>"
             )
         else:
             msg = ""

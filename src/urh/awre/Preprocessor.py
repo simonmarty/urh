@@ -1,7 +1,6 @@
 import itertools
 import math
 import os
-import time
 from collections import defaultdict
 
 import numpy as np
@@ -10,7 +9,7 @@ from urh.cythonext import awre_util
 from urh.signalprocessing.FieldType import FieldType
 
 
-class Preprocessor(object):
+class Preprocessor:
     """
     This class preprocesses the messages in the following ways
     1) Identify preamble / length of preamble
@@ -23,7 +22,7 @@ class Preprocessor(object):
     def __init__(self, bitvectors: list, existing_message_types: dict = None):
         self.bitvectors = bitvectors  # type: list[np.ndarray]
         self.existing_message_types = (
-            existing_message_types if existing_message_types is not None else dict()
+            existing_message_types if existing_message_types is not None else {}
         )
 
     def preprocess(self) -> (np.ndarray, int):
@@ -102,7 +101,7 @@ class Preprocessor(object):
                 if preamble_length is None:
                     try:
                         preamble_length = preamble_lengths[0]
-                    except IndexError as e:
+                    except IndexError:
                         preamble_length = 0
                 result[i] = preamble_length
 
@@ -219,7 +218,7 @@ class Preprocessor(object):
             )
         ]
 
-        result = dict()
+        result = {}
         if len(messages_without_sync) == 0:
             return result
 

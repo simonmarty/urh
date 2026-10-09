@@ -4,10 +4,8 @@ import time
 
 from urh.util.Logger import logger
 
-from urh.signalprocessing.Message import Message
 
-
-class PCAP(object):
+class PCAP:
     def __init__(self):
         self.timestamp_sec = None
         self.timestamp_nsec = None
@@ -62,7 +60,7 @@ class PCAP(object):
         :return:
         """
         if os.path.isfile(filename):
-            logger.warning("{0} already exists. Overwriting it".format(filename))
+            logger.warning(f"{filename} already exists. Overwriting it")
 
         with open(filename, "wb") as f:
             f.write(self.build_global_header())

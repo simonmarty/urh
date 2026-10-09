@@ -10,7 +10,6 @@ from urh import settings
 from urh.plugins.Plugin import SDRPlugin
 from urh.signalprocessing.IQArray import IQArray
 from urh.signalprocessing.Message import Message
-from urh.util.Errors import Errors
 from urh.util.Logger import logger
 from urh.util.RingBuffer import RingBuffer
 
@@ -127,9 +126,7 @@ class NetworkSDRInterfacePlugin(SDRPlugin):
                                 None, dtype=self.DATA_TYPE, n=num_samples // i
                             )
                             logger.debug(
-                                "Using buffer with {0:d} samples instead.".format(
-                                    num_samples // i
-                                )
+                                f"Using buffer with {num_samples // i:d} samples instead."
                             )
                             break
                         except MemoryError:
@@ -240,9 +237,7 @@ class NetworkSDRInterfacePlugin(SDRPlugin):
 
     def send_raw_data(self, data: IQArray, num_repeats: int):
         byte_data = data.to_bytes()
-        rng = (
-            iter(int, 1) if num_repeats <= 0 else range(0, num_repeats)
-        )  # <= 0 = forever
+        rng = iter(int, 1) if num_repeats <= 0 else range(num_repeats)  # <= 0 = forever
 
         sock = self.prepare_send_connection()
         if sock is None:
@@ -282,9 +277,7 @@ class NetworkSDRInterfacePlugin(SDRPlugin):
     def send_raw_data_continuously(
         self, ring_buffer: RingBuffer, num_samples_to_send: int, num_repeats: int
     ):
-        rng = (
-            iter(int, 1) if num_repeats <= 0 else range(0, num_repeats)
-        )  # <= 0 = forever
+        rng = iter(int, 1) if num_repeats <= 0 else range(num_repeats)  # <= 0 = forever
         samples_per_iteration = 65536 // 2
         sock = self.prepare_send_connection()
         if sock is None:
@@ -355,16 +348,14 @@ class NetworkSDRInterfacePlugin(SDRPlugin):
                     self.bit_str_to_bytearray(msg.encoded_bits_str) + b"\n", sock
                 )
                 if not error:
-                    logger.debug("Sent message {0}/{1}".format(i + 1, len(messages)))
-                    logger.debug("Waiting message pause: {0:.2f}s".format(wait_time))
+                    logger.debug(f"Sent message {i + 1}/{len(messages)}")
+                    logger.debug(f"Waiting message pause: {wait_time:.2f}s")
                     if self.__sending_interrupt_requested:
                         break
                     time.sleep(wait_time)
                 else:
                     logger.critical(
-                        "Could not connect to {0}:{1}".format(
-                            self.client_ip, self.client_port
-                        )
+                        f"Could not connect to {self.client_ip}:{self.client_port}"
                     )
                     break
             logger.debug("Sending finished")
@@ -422,12 +413,12 @@ class NetworkSDRInterfacePlugin(SDRPlugin):
 
     @staticmethod
     def bytearray_to_bit_str(arr: bytearray) -> str:
-        return "".join("{:08b}".format(a) for a in arr)
+        return "".join(f"{a:08b}" for a in arr)
 
     @staticmethod
     def bit_str_to_bytearray(bits: str) -> bytearray:
         bits += "0" * ((8 - len(bits) % 8) % 8)
-        return bytearray((int(bits[i : i + 8], 2) for i in range(0, len(bits), 8)))
+        return bytearray(int(bits[i : i + 8], 2) for i in range(0, len(bits), 8))
 
     def on_linedit_client_ip_editing_finished(self):
         ip = self.settings_frame.lineEditClientIP.text()

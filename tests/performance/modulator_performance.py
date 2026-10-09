@@ -12,7 +12,7 @@ def test_fsk_performance():
     elapsed = time.time() - t
 
     result.tofile("/tmp/fsk.complex")
-    print("FSK {}ms".format(elapsed * 1000))
+    print(f"FSK {elapsed * 1000}ms")
 
 
 def test_ask_performance():
@@ -24,7 +24,7 @@ def test_ask_performance():
     elapsed = time.time() - t
 
     result.tofile("/tmp/ask.complex")
-    print("ASK {}ms".format(elapsed * 1000))
+    print(f"ASK {elapsed * 1000}ms")
 
 
 def test_psk_performance():
@@ -36,7 +36,7 @@ def test_psk_performance():
     elapsed = time.time() - t
 
     result.tofile("/tmp/psk.complex")
-    print("PSK {}ms".format(elapsed * 1000))
+    print(f"PSK {elapsed * 1000}ms")
 
 
 def test_gfsk_performance():
@@ -48,7 +48,7 @@ def test_gfsk_performance():
     elapsed = time.time() - t
 
     result.tofile("/tmp/gfsk.complex")
-    print("GFSK {}ms".format(elapsed * 1000))
+    print(f"GFSK {elapsed * 1000}ms")
 
 
 if __name__ == "__main__":

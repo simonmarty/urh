@@ -42,7 +42,7 @@ class BladeRF(Device):
         if not device_identifier:
             ctrl_connection.send("OPEN:" + str(ret))
         else:
-            ctrl_connection.send("OPEN ({}):{}".format(device_identifier, ret))
+            ctrl_connection.send(f"OPEN ({device_identifier}):{ret}")
 
         ctrl_connection.send(
             "If you experience problems, make sure you place a rbf file matching your device"

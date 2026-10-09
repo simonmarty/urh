@@ -51,7 +51,7 @@ class ProtocolTreeModel(QAbstractItemModel):
         """
         result = {}
         for i, group in enumerate(self.rootItem.children):
-            result[i] = [child for child in group.children]
+            result[i] = list(group.children)
 
         return result
 
@@ -189,11 +189,9 @@ class ProtocolTreeModel(QAbstractItemModel):
         for index in indexes:
             parent_item = self.getItem(index.parent())
             if parent_item == self.rootItem:
-                data += "{0},{1},{2}/".format(index.row(), index.column(), -1)
+                data += f"{index.row()},{index.column()},{-1}/"
             else:
-                data += "{0},{1},{2}/".format(
-                    index.row(), index.column(), self.rootItem.index_of(parent_item)
-                )
+                data += f"{index.row()},{index.column()},{self.rootItem.index_of(parent_item)}/"
         mime_data = QMimeData()
         mime_data.setText(data)
         return mime_data
@@ -223,7 +221,7 @@ class ProtocolTreeModel(QAbstractItemModel):
                 else:
                     contains_files = True
             except AttributeError:
-                logger.error("Could not perform drop for index {}".format(index))
+                logger.error(f"Could not perform drop for index {index}")
                 continue
 
             if contains_files and contains_groups:

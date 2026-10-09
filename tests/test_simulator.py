@@ -8,17 +8,13 @@ import time
 import numpy as np
 
 # import yappi
-from PyQt6.QtTest import QTest
 
 from tests.QtTestCase import QtTestCase
 from tests.utils_testing import get_path_for_data_file
 from urh import settings
-from urh.controller.SimulatorTabController import SimulatorTabController
-from urh.controller.dialogs.SimulatorDialog import SimulatorDialog
 from urh.plugins.NetworkSDRInterface.NetworkSDRInterfacePlugin import (
     NetworkSDRInterfacePlugin,
 )
-from urh.signalprocessing.ChecksumLabel import ChecksumLabel
 from urh.signalprocessing.IQArray import IQArray
 from urh.signalprocessing.Modulator import Modulator
 from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
@@ -28,7 +24,6 @@ from urh.simulator.ActionItem import (
     SleepActionItem,
     CounterActionItem,
 )
-from urh.simulator.SimulatorProtocolLabel import SimulatorProtocolLabel
 from urh.util import util
 from urh.util.Logger import logger
 
@@ -49,7 +44,7 @@ class TestSimulator(QtTestCase):
             if n < 50:
                 time.sleep(self.TIMEOUT)
             else:
-                self.fail('Did not receive log message "{}"'.format(log_message))
+                self.fail(f'Did not receive log message "{log_message}"')
             n += 1
 
     def test_simulation_flow(self):
@@ -76,9 +71,7 @@ class TestSimulator(QtTestCase):
         self.alice = NetworkSDRInterfacePlugin(raw_mode=True)
         self.alice.client_port = port
 
-        dialog = (
-            self.form.simulator_tab_controller.get_simulator_dialog()
-        )  # type: SimulatorDialog
+        dialog = self.form.simulator_tab_controller.get_simulator_dialog()  # type: SimulatorDialog
 
         name = NetworkSDRInterfacePlugin.NETWORK_SDR_NAME
         dialog.device_settings_rx_widget.ui.cbDevice.setCurrentText(name)
@@ -137,7 +130,7 @@ class TestSimulator(QtTestCase):
         bits = bits.replace(preamble_str + sync_str, "")
         self.assertEqual(int(bits, 2), seq_num + 1)
 
-        seq = list(map(int, "{0:08b}".format(seq_num + 2)))
+        seq = list(map(int, f"{seq_num + 2:08b}"))
         checksum = list(checksum_label.calculate_checksum(seq + data))
         msg2 = preamble + sync + seq + data + checksum
 
@@ -155,7 +148,7 @@ class TestSimulator(QtTestCase):
         bits = bits.replace(preamble_str + sync_str, "")
         self.assertEqual(int(bits, 2), seq_num + 3)
 
-        seq = list(map(int, "{0:08b}".format(seq_num + 4)))
+        seq = list(map(int, f"{seq_num + 4:08b}"))
         checksum = list(checksum_label.calculate_checksum(seq + data))
         msg3 = preamble + sync + seq + data + checksum
 
@@ -250,9 +243,9 @@ class TestSimulator(QtTestCase):
 
         self.assertFalse(os.path.isfile(file_name))
         external_command = (
-            "cmd.exe /C copy NUL {}".format(file_name)
+            f"cmd.exe /C copy NUL {file_name}"
             if os.name == "nt"
-            else "touch {}".format(file_name)
+            else f"touch {file_name}"
         )
         stc.ui.lineEditTriggerCommand.setText(external_command)
         self.assertEqual(action.model_item.command, external_command)
@@ -321,7 +314,7 @@ class TestSimulator(QtTestCase):
                     total_data.append(data)
                 else:
                     break
-            except socket.timeout:
+            except TimeoutError:
                 break
 
         if len(total_data) == 0:

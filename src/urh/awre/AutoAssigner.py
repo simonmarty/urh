@@ -1,7 +1,6 @@
 import numpy as np
 
 from urh.cythonext import util
-from urh.signalprocessing.Message import Message
 
 
 def auto_assign_participants(messages, participants):
@@ -34,7 +33,7 @@ def auto_assign_participants(messages, participants):
     rssis = np.array([msg.rssi for msg in messages], dtype=np.float32)
     min_rssi, max_rssi = util.minmax(rssis)
     center_spacing = (max_rssi - min_rssi) / (len(participants) - 1)
-    centers = [min_rssi + i * center_spacing for i in range(0, len(participants))]
+    centers = [min_rssi + i * center_spacing for i in range(len(participants))]
     rssi_assigned_centers = []
 
     for rssi in rssis:

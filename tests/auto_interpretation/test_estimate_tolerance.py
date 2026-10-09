@@ -1,6 +1,5 @@
 import unittest
 
-import numpy as np
 
 from urh.ainterpretation import AutoInterpretation
 

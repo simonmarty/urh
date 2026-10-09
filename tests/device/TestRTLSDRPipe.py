@@ -49,13 +49,13 @@ def process_command(command):
 
     tag, value = command.split(":")
     if tag == "center_freq":
-        logger.info("[RTLSDR] setting center freq to {}".format(int(value)))
+        logger.info(f"[RTLSDR] setting center freq to {int(value)}")
         rtlsdr.set_center_freq(int(value))
     elif tag == "tuner_gain":
-        logger.info("[RTLSDR] setting tuner_gain to {}".format(int(value)))
+        logger.info(f"[RTLSDR] setting tuner_gain to {int(value)}")
         rtlsdr.set_tuner_gain(int(value))
     elif tag == "sample_rate":
-        logger.info("[RTLSDR] setting sample rate to {}".format(int(value)))
+        logger.info(f"[RTLSDR] setting sample rate to {int(value)}")
         rtlsdr.set_sample_rate(int(value))
 
 
@@ -106,11 +106,11 @@ class TestPipe(unittest.TestCase):
         p.start()
         time.sleep(2)
         print("Sending set freq command")
-        parent_conn.send("center_freq:{}".format(int(433.92e6)))
+        parent_conn.send(f"center_freq:{int(433.92e6)}")
         time.sleep(1)
-        parent_conn.send("tuner_gain:{}".format(int(20)))
+        parent_conn.send(f"tuner_gain:{20}")
         time.sleep(1)
-        parent_conn.send("sample_rate:{}".format(int(2e6)))
+        parent_conn.send(f"sample_rate:{int(2e6)}")
         print("Sending stop command")
         parent_conn.send("stop")
         p.join()

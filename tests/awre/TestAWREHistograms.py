@@ -77,9 +77,7 @@ class TestAWREHistograms(AWRETestCase):
 
         for i, (message_length, bitvectors) in enumerate(bitvectors_by_length.items()):
             plt.subplot(2, 2, i + 2)
-            plt.title(
-                "Messages with length {} ({})".format(message_length, len(bitvectors))
-            )
+            plt.title(f"Messages with length {message_length} ({len(bitvectors)})")
             Histogram(bitvectors).subplot_on(plt)
 
         if SHOW_PLOTS:
@@ -132,9 +130,7 @@ class TestAWREHistograms(AWRETestCase):
         ):
             plt.subplot(2, 2, i + 3)
             plt.title(
-                "Messages with participant {} ({})".format(
-                    participant.shortname, len(bitvectors)
-                )
+                f"Messages with participant {participant.shortname} ({len(bitvectors)})"
             )
             Histogram(bitvectors).subplot_on(plt)
 
@@ -205,9 +201,7 @@ class TestAWREHistograms(AWRETestCase):
         ):
             plt.subplot(2, 2, i + 3)
             plt.title(
-                "Messages with participant {} ({})".format(
-                    participant.shortname, len(bitvectors)
-                )
+                f"Messages with participant {participant.shortname} ({len(bitvectors)})"
             )
             Histogram(bitvectors).subplot_on(plt)
 

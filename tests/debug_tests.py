@@ -25,15 +25,13 @@ for i in range(RUNS):
             streak += 1
             longest_streak = max(streak, longest_streak)
             print(
-                "#{} was successful [{:.2f}s] (Streak: {}/{})".format(
-                    i + 1, duration, streak, longest_streak
-                )
+                f"#{i + 1} was successful [{duration:.2f}s] (Streak: {streak}/{longest_streak})"
             )
         else:
             streak = 0
-            print("#{} failed [{:.2f}s]".format(i + 1, duration))
+            print(f"#{i + 1} failed [{duration:.2f}s]")
             with open(filename, "wb") as f:
                 f.write(completed.stdout)
-            print("Written output to file {}".format(filename))
+            print(f"Written output to file {filename}")
     except KeyboardInterrupt:
         sys.exit(1)

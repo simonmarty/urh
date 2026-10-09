@@ -68,9 +68,7 @@ class EditableGraphicView(ZoomableGraphicView):
         self.delete_action.setIcon(QIcon.fromTheme("edit-delete"))
         self.addAction(self.delete_action)
 
-        self.save_as_action = QAction(
-            self.tr("Save Signal as..."), self
-        )  # type: QAction
+        self.save_as_action = QAction(self.tr("Save Signal as..."), self)  # type: QAction
         self.save_as_action.setIcon(QIcon.fromTheme("document-save-as"))
         self.save_as_action.setShortcut(QKeySequence.StandardKey.SaveAs)
         self.save_as_action.triggered.connect(self.save_as_clicked.emit)

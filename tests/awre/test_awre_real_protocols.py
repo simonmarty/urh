@@ -1,6 +1,5 @@
 from tests.awre.AWRETestCase import AWRETestCase
 from tests.utils_testing import get_path_for_data_file
-from urh.awre.CommonRange import CommonRange
 from urh.awre.FormatFinder import FormatFinder
 from urh.awre.Preprocessor import Preprocessor
 from urh.awre.ProtocolGenerator import ProtocolGenerator

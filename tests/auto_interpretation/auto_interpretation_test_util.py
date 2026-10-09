@@ -90,10 +90,7 @@ def generate_message_bits(num_bits=80, preamble="", sync="", eof=""):
     leftover_bits = bits_to_generate % 8
     return "".join(
         [preamble, sync]
-        + [
-            "{0:08b}".format(random.choice(range(0, 256)))
-            for _ in range(bytes_to_generate)
-        ]
+        + [f"{random.choice(range(256)):08b}" for _ in range(bytes_to_generate)]
         + [random.choice(["0", "1"]) for _ in range(leftover_bits)]
         + [eof]
     )

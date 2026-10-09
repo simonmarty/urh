@@ -6,7 +6,6 @@ from PyQt6.QtWidgets import QMessageBox, QApplication
 
 from urh import settings
 from urh.dev import config
-from urh.models.ProtocolTreeItem import ProtocolTreeItem
 from urh.signalprocessing.Encoding import Encoding
 from urh.signalprocessing.FieldType import FieldType
 from urh.signalprocessing.MessageType import MessageType
@@ -27,15 +26,15 @@ class ProjectManager(QObject):
     def __init__(self, main_controller):
         super().__init__()
         self.main_controller = main_controller
-        self.device_conf = dict(
-            frequency=config.DEFAULT_FREQUENCY,
-            sample_rate=config.DEFAULT_SAMPLE_RATE,
-            bandwidth=config.DEFAULT_BANDWIDTH,
-            name="USRP",
-        )
+        self.device_conf = {
+            "frequency": config.DEFAULT_FREQUENCY,
+            "sample_rate": config.DEFAULT_SAMPLE_RATE,
+            "bandwidth": config.DEFAULT_BANDWIDTH,
+            "name": "USRP",
+        }
 
-        self.simulator_rx_conf = dict()
-        self.simulator_tx_conf = dict()
+        self.simulator_rx_conf = {}
+        self.simulator_tx_conf = {}
 
         self.simulator_num_repeat = 1
         self.simulator_retries = 10
@@ -56,7 +55,7 @@ class ProjectManager(QObject):
         self.participants = []
 
         self.field_types = []  # type: list[FieldType]
-        self.field_types_by_caption = dict()
+        self.field_types_by_caption = {}
         self.reload_field_types()
 
     @property
@@ -143,7 +142,7 @@ class ProjectManager(QObject):
         ]
 
         try:
-            f = open(os.path.join(prefix, settings.DECODINGS_FILE), "r")
+            f = open(os.path.join(prefix, settings.DECODINGS_FILE))
         except FileNotFoundError:
             self.decodings = fallback
             return
@@ -159,14 +158,15 @@ class ProjectManager(QObject):
         self.decodings = decodings if decodings else fallback
 
     @staticmethod
-    def read_device_conf_dict(tag: ET.Element, target_dict):
+    def read_device_conf_dict(tag: ET.Element | None, target_dict):
         if tag is None:
             return
 
         for dev_tag in tag:
             if dev_tag.text is None:
-                logger.warn("{} has None text".format(str(dev_tag)))
+                logger.warning(f"{str(dev_tag)} has None text")
                 continue
+            value: int | float | str | None
             try:
                 try:
                     value = int(dev_tag.text)
@@ -362,9 +362,13 @@ class ProjectManager(QObject):
         signal_tag.set("bits_per_symbol", str(signal.bits_per_symbol))
         signal_tag.set("costas_loop_bandwidth", str(signal.costas_loop_bandwidth))
 
-        messages = ET.SubElement(signal_tag, "messages")
-        for message in messages:
-            messages.append(message.to_xml())
+        # NOTE: this element is intentionally left empty. The loop that used to
+        # populate it iterated over the freshly created (empty) element rather
+        # than over any message source, so it never ran. Signal has no
+        # `messages` attribute, so there is no correct one-line repair --
+        # read_signal_information_from_project_file() still looks for <message>
+        # children here, so per-message state is not persisted by this path.
+        ET.SubElement(signal_tag, "messages")
 
         tree.write(self.project_file)
 
@@ -597,7 +601,7 @@ class ProjectManager(QObject):
         )
         tree_root = proto_tree_model.rootItem
         pfi = proto_tree_model.protocol_tree_items
-        proto_frame_items = [item for item in pfi[0]]  # type:  list[ProtocolTreeItem]
+        proto_frame_items = list(pfi[0])  # type:  list[ProtocolTreeItem]
 
         for group_tag in root.iter("group"):
             name = group_tag.attrib["name"]
@@ -618,11 +622,7 @@ class ProjectManager(QObject):
                     )
                 try:
                     proto_frame_item = next(
-                        (
-                            p
-                            for p in proto_frame_items
-                            if p.protocol.filename == filename
-                        )
+                        p for p in proto_frame_items if p.protocol.filename == filename
                     )
                 except StopIteration:
                     proto_frame_item = None

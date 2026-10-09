@@ -2,7 +2,6 @@ from PyQt6.QtCore import Qt
 
 from tests.QtTestCase import QtTestCase
 from urh import settings
-from urh.controller.widgets.ChecksumWidget import ChecksumWidget
 from urh.signalprocessing.Encoding import Encoding
 
 
@@ -31,9 +30,7 @@ class TestCRCGUIIntegration(QtTestCase):
             proto_label_dialog.model.index(0, 0), checksum_fieldtype.caption
         )
         self.assertEqual(proto_label_dialog.ui.tabWidgetAdvancedSettings.count(), 1)
-        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(
-            0
-        )  # type: ChecksumWidget
+        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(0)  # type: ChecksumWidget
         self.assertNotIn("WSP", checksum_tab.ui.comboBoxCategory.currentText())
         checksum_tab.ui.radioButtonWSPAuto.click()
 
@@ -52,9 +49,7 @@ class TestCRCGUIIntegration(QtTestCase):
             self.form.compare_frame_controller.create_protocol_label_dialog()
         )
         self.assertEqual(proto_label_dialog.ui.tabWidgetAdvancedSettings.count(), 1)
-        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(
-            0
-        )  # type: ChecksumWidget
+        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(0)  # type: ChecksumWidget
         checksum_tab.ui.comboBoxCategory.setCurrentIndex(1)
         self.assertIn("WSP", checksum_tab.ui.comboBoxCategory.currentText())
         checksum_tab.ui.radioButtonWSPAuto.click()
@@ -95,9 +90,7 @@ class TestCRCGUIIntegration(QtTestCase):
             proto_label_dialog.model.index(0, 0), checksum_fieldtype.caption
         )
         self.assertEqual(proto_label_dialog.ui.tabWidgetAdvancedSettings.count(), 1)
-        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(
-            0
-        )  # type: ChecksumWidget
+        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(0)  # type: ChecksumWidget
         self.assertEqual("generic", checksum_tab.ui.comboBoxCategory.currentText())
         self.assertNotEqual("CC1101", checksum_tab.ui.comboBoxCRCFunction.currentText())
 
@@ -118,9 +111,7 @@ class TestCRCGUIIntegration(QtTestCase):
             self.form.compare_frame_controller.create_protocol_label_dialog()
         )
         self.assertEqual(proto_label_dialog.ui.tabWidgetAdvancedSettings.count(), 1)
-        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(
-            0
-        )  # type: ChecksumWidget
+        checksum_tab = proto_label_dialog.ui.tabWidgetAdvancedSettings.widget(0)  # type: ChecksumWidget
         checksum_tab.ui.comboBoxCRCFunction.setCurrentText("CC1101")
         self.assertEqual(checksum_tab.ui.lineEditCRCPolynomial.text(), "8005")
         self.assertEqual(checksum_tab.ui.lineEditFinalXOR.text(), "0000")

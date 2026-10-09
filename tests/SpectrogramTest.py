@@ -72,14 +72,14 @@ class SpectrogramTest(unittest.TestCase):
         plt.xticks(
             x_tick_pos,
             [
-                "%.02f" % l
+                f"{l:.2f}"
                 for l in (x_tick_pos * len(self.signal.iq_array.data) / num_time_bins)
                 / sample_rate
             ],
         )
         y_tick_pos = np.linspace(0, num_freq_bins - 1, 10, dtype=np.int16)
         frequencies = np.fft.fftshift(np.fft.fftfreq(num_freq_bins, 1 / sample_rate))
-        plt.yticks(y_tick_pos, ["%.02f" % frequencies[i] for i in y_tick_pos])
+        plt.yticks(y_tick_pos, [f"{frequencies[i]:.2f}" for i in y_tick_pos])
 
         plt.show()
 
@@ -103,26 +103,23 @@ class SpectrogramTest(unittest.TestCase):
         T = 0.1
         nsamples = T * fs
         t = np.linspace(0, T, nsamples, endpoint=False)
-        a = 0.02
         f0 = 600
         x = 0.25 * np.sin(2 * np.pi * 0.25 * f0 * t)
         x += 0.25 * np.sin(2 * np.pi * f0 * t)
         x += 0.25 * np.sin(2 * np.pi * 2 * f0 * t)
         x += 0.25 * np.sin(2 * np.pi * 3 * f0 * t)
 
-        import time
-
         lowcut = f0 - 200
         highcut = f0 + 200
 
         # Define the parameters
-        fc = f0 / fs
+        f0 / fs
         b = 0.05
         data = x
 
         y = Filter.apply_bandpass_filter(data, lowcut / fs, highcut / fs, filter_bw=b)
 
-        plt.plot(y, label="Filtered signal (%g Hz)" % f0)
+        plt.plot(y, label=f"Filtered signal ({f0:g} Hz)")
         plt.plot(data, label="Noisy signal")
         plt.legend(loc="upper left")
         plt.show()
@@ -144,7 +141,7 @@ class SpectrogramTest(unittest.TestCase):
 
         print("Len data", len(data))
         a, b = self.narrowband_iir(f0, 100, fs)
-        s = a.sum() + b.sum()
+        a.sum() + b.sum()
         # a /= s
         # b /= s
         print(a, b)
@@ -152,7 +149,7 @@ class SpectrogramTest(unittest.TestCase):
         filtered_data = signal_functions.iir_filter(a, b, data)
 
         # plt.plot(data, label='Noisy signal')
-        plt.plot(np.fft.fft(filtered_data), label="Filtered signal (%g Hz)" % f0)
+        plt.plot(np.fft.fft(filtered_data), label=f"Filtered signal ({f0:g} Hz)")
 
         plt.legend(loc="upper left")
         plt.show()
@@ -182,9 +179,9 @@ class SpectrogramTest(unittest.TestCase):
         modulator1.carrier_freq_hz = channel1_freq
         modulator2.carrier_freq_hz = channel2_freq
         modulator3.carrier_freq_hz = -channel2_freq
-        modulator1.sample_rate = (
-            modulator2.sample_rate
-        ) = modulator3.sample_rate = sample_rate
+        modulator1.sample_rate = modulator2.sample_rate = modulator3.sample_rate = (
+            sample_rate
+        )
         data1 = modulator1.modulate(channel1_data)
         data2 = modulator2.modulate(channel2_data)
         data3 = modulator3.modulate(channel3_data)
@@ -242,10 +239,10 @@ class SpectrogramTest(unittest.TestCase):
         # h = Filter.design_windowed_sinc_bandpass(f_low=f_low, f_high=f_high, bw=bw)
         # h = Filter.design_windowed_sinc_lpf(0.42, bw=0.08)
 
-        impulse = np.exp(1j * np.linspace(0, 1, 50))
+        np.exp(1j * np.linspace(0, 1, 50))
 
         plt.subplot("221")
-        plt.title("f_low={} f_high={} bw={}".format(f_low, f_high, bw))
+        plt.title(f"f_low={f_low} f_high={f_high} bw={bw}")
         plt.plot(np.fft.fftfreq(1024), np.fft.fft(h, 1024))
 
         plt.subplot("222")

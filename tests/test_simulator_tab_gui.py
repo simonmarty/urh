@@ -17,7 +17,6 @@ from urh.plugins.NetworkSDRInterface.NetworkSDRInterfacePlugin import (
     NetworkSDRInterfacePlugin,
 )
 from urh.signalprocessing.IQArray import IQArray
-from urh.signalprocessing.Modulator import Modulator
 from urh.signalprocessing.Participant import Participant
 from urh.simulator.MessageItem import MessageItem
 from urh.simulator.RuleItem import RuleItem
@@ -26,7 +25,6 @@ from urh.simulator.SimulatorRule import ConditionType
 from urh.ui.ExpressionLineEdit import ExpressionLineEdit
 from urh.ui.RuleExpressionValidator import RuleExpressionValidator
 from urh.util import util
-from urh.util.Logger import logger
 
 
 class TestSimulatorTabGUI(QtTestCase):
@@ -257,9 +255,10 @@ class TestSimulatorTabGUI(QtTestCase):
         self.assertEqual(stc.simulator_message_field_model.rowCount(), 1)
 
         stc.ui.tblViewMessage.selectColumn(4)
-        x, y = stc.ui.tblViewMessage.columnViewportPosition(
-            4
-        ), stc.ui.tblViewMessage.rowViewportPosition(0)
+        x, y = (
+            stc.ui.tblViewMessage.columnViewportPosition(4),
+            stc.ui.tblViewMessage.rowViewportPosition(0),
+        )
         pos = QPoint(x, y)
         stc.ui.tblViewMessage.context_menu_pos = pos
         menu = stc.ui.tblViewMessage.create_context_menu()
@@ -406,7 +405,7 @@ class TestSimulatorTabGUI(QtTestCase):
                 if n < 50:
                     time.sleep(0.5)
                 else:
-                    self.fail('Did not receive log message "{}"'.format(log_message))
+                    self.fail(f'Did not receive log message "{log_message}"')
                 n += 1
 
         stc = self.form.simulator_tab_controller

@@ -15,7 +15,7 @@ class FilterType(Enum):
     custom = "custom"
 
 
-class Filter(object):
+class Filter:
     BANDWIDTHS = {
         "Very Narrow": 0.001,
         "Narrow": 0.01,
@@ -63,7 +63,7 @@ class Filter(object):
 
     @staticmethod
     def get_filter_length_from_bandwidth(bw):
-        N = int(math.ceil((4 / bw)))
+        N = int(math.ceil(4 / bw))
         return N + 1 if N % 2 == 0 else N  # Ensure N is odd.
 
     @staticmethod

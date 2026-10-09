@@ -49,9 +49,7 @@ class SimulatorGraphicsView(QGraphicsView):
         )
         self.addAction(self.select_all_action)
 
-        self.copy_action = QAction(
-            self.tr("Copy selected items"), self
-        )  # type: QAction
+        self.copy_action = QAction(self.tr("Copy selected items"), self)  # type: QAction
         self.copy_action.setShortcut(QKeySequence.StandardKey.Copy)
         self.copy_action.triggered.connect(self.on_copy_action_triggered)
         self.copy_action.setShortcutContext(
@@ -337,9 +335,7 @@ class SimulatorGraphicsView(QGraphicsView):
                 swap_part_action.setIcon(QIcon.fromTheme("object-flip-horizontal"))
 
             pause_action = menu.addAction(
-                "Set subsequent pause ({} samples)".format(
-                    self.context_menu_item.model_item.pause
-                )
+                f"Set subsequent pause ({self.context_menu_item.model_item.pause} samples)"
             )
             pause_action.triggered.connect(self.on_pause_action_triggered)
 

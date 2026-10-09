@@ -21,7 +21,7 @@ class FileIconProvider(QFileIconProvider):
                     )
                 ) or (arg.isFile() and arg.fileName() == settings.PROJECT_FILE):
                     return QIcon(":/icons/icons/appicon.png")
-            except:
+            except Exception:
                 # In some environments (e.g. docker) there tend to be encoding errors
                 pass
 

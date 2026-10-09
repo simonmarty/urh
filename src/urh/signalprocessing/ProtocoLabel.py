@@ -8,7 +8,7 @@ from urh.signalprocessing.Interval import Interval
 from urh.util.Formatter import Formatter
 
 
-class ProtocolLabel(object):
+class ProtocolLabel:
     """
     This represents a field in the protocol, e.g. temperature
     Field range is described by (start, end) and it's value by value
@@ -208,9 +208,7 @@ class ProtocolLabel(object):
         return hash((self.start, self.end, self.name, self.field_type_function))
 
     def __repr__(self):
-        return "Protocol Label - start: {0} end: {1} name: {2}".format(
-            self.start, self.end, self.name
-        )
+        return f"Protocol Label - start: {self.start} end: {self.end} name: {self.name}"
 
     def overlaps_with(self, other_label):
         return Interval(self.start, self.end).overlaps_with(
@@ -260,7 +258,7 @@ class ProtocolLabel(object):
         :return:
         """
         field_types_by_caption = (
-            dict() if field_types_by_caption is None else field_types_by_caption
+            {} if field_types_by_caption is None else field_types_by_caption
         )
 
         name = tag.get("name")

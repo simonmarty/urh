@@ -40,7 +40,7 @@ class TestModulationDetection(unittest.TestCase):
 
         for start, end in message_indices:
             mod = AutoInterpretation.detect_modulation(data[start:end])
-            self.assertEqual(mod, "ASK", msg="{}/{}".format(start, end))
+            self.assertEqual(mod, "ASK", msg=f"{start}/{end}")
 
     def test_psk_detection(self):
         modulator = Modulator("")

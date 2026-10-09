@@ -3,8 +3,6 @@ import random
 import tempfile
 
 from PyQt6.QtCore import QDir, Qt
-from PyQt6.QtTest import QTest
-from PyQt6.QtWidgets import QApplication
 
 from tests.QtTestCase import QtTestCase
 from tests.utils_testing import get_path_for_data_file

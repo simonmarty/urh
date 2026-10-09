@@ -7,7 +7,7 @@ from urh.util.Logger import logger
 from urh.util.RingBuffer import RingBuffer
 
 
-class ContinuousModulator(object):
+class ContinuousModulator:
     """
     This class is used in continuous sending mode.
     You pass a list of messages and modulators to it, and it takes care of modulating the messages sequentially.
@@ -68,9 +68,7 @@ class ContinuousModulator(object):
         logger.debug("Stopped continuous modulation")
 
     def modulate_continuously(self, num_repeats):
-        rng = (
-            iter(int, 1) if num_repeats <= 0 else range(0, num_repeats)
-        )  # <= 0 = forever
+        rng = iter(int, 1) if num_repeats <= 0 else range(num_repeats)  # <= 0 = forever
         for _ in rng:
             if self.abort.value:
                 return

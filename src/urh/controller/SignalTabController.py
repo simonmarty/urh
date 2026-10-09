@@ -135,7 +135,7 @@ class SignalTabController(QWidget):
 
     def set_frame_numbers(self):
         for i, f in enumerate(self.signal_frames):
-            f.ui.lSignalNr.setText("{0:d}:".format(i + 1))
+            f.ui.lSignalNr.setText(f"{i + 1:d}:")
 
     @pyqtSlot()
     def save_all(self):

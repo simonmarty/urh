@@ -4,7 +4,6 @@ from enum import Enum
 from subprocess import call, DEVNULL
 
 from urh import settings
-from urh.util.Logger import logger
 
 
 class Backends(Enum):
@@ -14,7 +13,7 @@ class Backends(Enum):
     network = "Network Backend"  # provided by network sdr plugin
 
 
-class BackendContainer(object):
+class BackendContainer:
     def __init__(self, name, avail_backends: set, supports_rx: bool, supports_tx: bool):
         self.name = name
         self.avail_backends = avail_backends
@@ -80,7 +79,7 @@ class BackendContainer(object):
             settings.write(self.name + "_selected_backend", self.selected_backend.name)
 
 
-class BackendHandler(object):
+class BackendHandler:
     """
     This class controls the devices backend.
     1) List available backends for devices
@@ -147,7 +146,7 @@ class BackendHandler(object):
     @property
     def __plutosdr_native_enabled(self) -> bool:
         try:
-            from urh.dev.native.lib import plutosdr
+            from urh.dev.native.lib import plutosdr  # noqa: F401
 
             return True
         except ImportError:
@@ -156,7 +155,7 @@ class BackendHandler(object):
     @property
     def __bladerf_native_enabled(self) -> bool:
         try:
-            from urh.dev.native.lib import bladerf
+            from urh.dev.native.lib import bladerf  # noqa: F401
 
             return True
         except ImportError:
@@ -165,7 +164,7 @@ class BackendHandler(object):
     @property
     def __hackrf_native_enabled(self) -> bool:
         try:
-            from urh.dev.native.lib import hackrf
+            from urh.dev.native.lib import hackrf  # noqa: F401
 
             return True
         except ImportError:
@@ -180,10 +179,10 @@ class BackendHandler(object):
                 devnull = open(os.devnull, "w")
                 old_stdout = os.dup(sys.stdout.fileno())
                 os.dup2(devnull.fileno(), sys.stdout.fileno())
-            except:
+            except Exception:
                 pass
 
-            from urh.dev.native.lib import usrp
+            from urh.dev.native.lib import usrp  # noqa: F401
 
             return True
         except ImportError:
@@ -197,7 +196,7 @@ class BackendHandler(object):
     @property
     def __soundcard_enabled(self) -> bool:
         try:
-            import pyaudio
+            import pyaudio  # noqa: F401
 
             return True
         except ImportError:
@@ -206,7 +205,7 @@ class BackendHandler(object):
     @property
     def __airspy_native_enabled(self) -> bool:
         try:
-            from urh.dev.native.lib import airspy
+            from urh.dev.native.lib import airspy  # noqa: F401
 
             return True
         except ImportError:
@@ -215,7 +214,7 @@ class BackendHandler(object):
     @property
     def __lime_native_enabled(self) -> bool:
         try:
-            from urh.dev.native.lib import limesdr
+            from urh.dev.native.lib import limesdr  # noqa: F401
 
             return True
         except ImportError:
@@ -224,7 +223,7 @@ class BackendHandler(object):
     @property
     def __rtlsdr_native_enabled(self) -> bool:
         try:
-            from urh.dev.native.lib import rtlsdr
+            from urh.dev.native.lib import rtlsdr  # noqa: F401
 
             return True
         except ImportError:
@@ -233,7 +232,7 @@ class BackendHandler(object):
     @property
     def __sdrplay_native_enabled(self) -> bool:
         try:
-            from urh.dev.native.lib import sdrplay
+            from urh.dev.native.lib import sdrplay  # noqa: F401
 
             return True
         except ImportError:
@@ -243,7 +242,7 @@ class BackendHandler(object):
         # Use shell=True to prevent console window popping up on windows
         return (
             call(
-                '"{0}" -c "import gnuradio"'.format(interpreter),
+                f'"{interpreter}" -c "import gnuradio"',
                 shell=True,
                 stderr=DEVNULL,
             )
@@ -279,9 +278,9 @@ class BackendHandler(object):
         has_send_file = False
         has_recv_file = False
         for f in os.listdir(script_path):
-            if f == "{0}_send.py".format(devname):
+            if f == f"{devname}_send.py":
                 has_send_file = True
-            elif f == "{0}_recv.py".format(devname):
+            elif f == f"{devname}_recv.py":
                 has_recv_file = True
 
         return has_recv_file, has_send_file
@@ -360,8 +359,6 @@ class BackendHandler(object):
     def perform_soundcard_health_check():
         result = "SoundCard -- "
         try:
-            import pyaudio
-
             return result + "OK"
         except Exception as e:
             return result + str(e)

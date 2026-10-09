@@ -101,19 +101,19 @@ if __name__ == "__main__":
     plt.plot(data / np.abs(data))
 
     plt.subplot(423)
-    plt.title("CWT ({0:.4f})".format(np.var(mag_wvlt)))
+    plt.title(f"CWT ({np.var(mag_wvlt):.4f})")
     plt.plot(mag_wvlt)
 
     plt.subplot(424)
-    plt.title("Filtered CWT ({0:.4f})".format(np.var(filtered_mag_wvlt)))
+    plt.title(f"Filtered CWT ({np.var(filtered_mag_wvlt):.4f})")
     plt.plot(filtered_mag_wvlt)
 
     plt.subplot(425)
-    plt.title("Norm CWT ({0:.4f})".format(np.var(norm_mag_wvlt)))
+    plt.title(f"Norm CWT ({np.var(norm_mag_wvlt):.4f})")
     plt.plot(norm_mag_wvlt)
 
     plt.subplot(426)
-    plt.title("Filtered Norm CWT ({0:.4f})".format(np.var(filtered_mag_norm_wvlt)))
+    plt.title(f"Filtered Norm CWT ({np.var(filtered_mag_norm_wvlt):.4f})")
     plt.plot(filtered_mag_norm_wvlt)
 
     plt.subplot(427)
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     print(ten_greatest_indices)
     print(fft_phase[ten_greatest_indices])
 
-    plt.title("FFT phase ({:.2f})".format(np.var(fft_phase)))
+    plt.title(f"FFT phase ({np.var(fft_phase):.2f})")
     plt.plot(fft_phase)
 
     plt.show()

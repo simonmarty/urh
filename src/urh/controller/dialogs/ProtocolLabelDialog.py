@@ -90,7 +90,7 @@ class ProtocolLabelDialog(QDialog):
         self.setWindowFlags(Qt.WindowType.Window)
 
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
         for i in range(self.model.rowCount()):
@@ -141,9 +141,7 @@ class ProtocolLabelDialog(QDialog):
             event.accept()
 
     def closeEvent(self, event: QCloseEvent):
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
         super().closeEvent(event)
 
     @pyqtSlot()

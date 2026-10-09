@@ -9,7 +9,7 @@ from urh.signalprocessing.IQArray import IQArray
 from urh.util.Logger import logger
 
 
-class Spectrogram(object):
+class Spectrogram:
     MAX_LINES_PER_VIEW = 1000
     DEFAULT_FFT_WINDOW_SIZE = 1024
 

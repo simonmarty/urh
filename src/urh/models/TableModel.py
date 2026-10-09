@@ -7,7 +7,6 @@ from PyQt6.QtGui import QFont, QColor, QUndoStack
 
 from urh import settings
 from urh.signalprocessing.ChecksumLabel import ChecksumLabel
-from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 from urh.ui.actions.InsertColumn import InsertColumn
 from urh.util import util
 from urh.util.Logger import logger
@@ -228,7 +227,6 @@ class TableModel(QAbstractTableModel):
 
         :return:
         """
-        pass
 
     def refresh_vertical_header(self):
         self.vertical_header_colors.clear()
@@ -240,9 +238,7 @@ class TableModel(QAbstractTableModel):
             except IndexError:
                 participant = None
             if participant:
-                self.vertical_header_text[i] = "{0} ({1})".format(
-                    i + 1, participant.shortname
-                )
+                self.vertical_header_text[i] = f"{i + 1} ({participant.shortname})"
                 self.vertical_header_colors[i] = settings.PARTICIPANT_COLORS[
                     participant.color_index
                 ]
@@ -267,7 +263,7 @@ class TableModel(QAbstractTableModel):
                 if self.proto_view == 0:
                     return self.display_data[i][j - alignment_offset]
                 elif self.proto_view == 1:
-                    return "{0:x}".format(self.display_data[i][j - alignment_offset])
+                    return f"{self.display_data[i][j - alignment_offset]:x}"
                 elif self.proto_view == 2:
                     return chr(self.display_data[i][j - alignment_offset])
             except IndexError:
@@ -317,9 +313,7 @@ class TableModel(QAbstractTableModel):
             bits = msg.decoded_bits if self.decode else msg.plain_bits
             color = "green" if bits[start:end] == calculated_crc else "red"
             expected = util.convert_bits_to_string(calculated_crc, self.proto_view)
-            result += '<br><font color="{}">Expected <b>{}</b></font>'.format(
-                color, expected
-            )
+            result += f'<br><font color="{color}">Expected <b>{expected}</b></font>'
 
         return result
 
@@ -368,7 +362,7 @@ class TableModel(QAbstractTableModel):
             converted_j = self.protocol.convert_index(
                 j, 1, 0, self.decode, message_indx=i
             )[0]
-            bits = "{0:04b}".format(int(value, 16))
+            bits = f"{int(value, 16):04b}"
             for k in range(4):
                 self.protocol.messages[i][converted_j + k] = bool(int(bits[k]))
             self.display_data[i][j] = int(value, 16)
@@ -380,7 +374,7 @@ class TableModel(QAbstractTableModel):
             converted_j = self.protocol.convert_index(
                 j, 2, 0, self.decode, message_indx=i
             )[0]
-            bits = "{0:08b}".format(ord(value))
+            bits = f"{ord(value):08b}"
             for k in range(8):
                 self.protocol.messages[i][converted_j + k] = bool(int(bits[k]))
             self.display_data[i][j] = ord(value)
@@ -460,7 +454,7 @@ class TableModel(QAbstractTableModel):
         try:
             msg = self.protocol.messages[row]
         except IndexError:
-            logger.warning("{} is out of range for generator protocol".format(row))
+            logger.warning(f"{row} is out of range for generator protocol")
             return -1
 
         for i, lbl in enumerate(msg.message_type):

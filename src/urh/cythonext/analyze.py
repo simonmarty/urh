@@ -15,9 +15,7 @@ for module in MODULES:
             "cython",
             "-a",
             "-X",
-            ",".join(
-                "{}={}".format(key, val) for key, val in COMPILER_DIRECTIVES.items()
-            ),
+            ",".join(f"{key}={val}" for key, val in COMPILER_DIRECTIVES.items()),
             "--cplus",
             "-3",
             module + ".pyx",

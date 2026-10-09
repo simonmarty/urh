@@ -59,7 +59,7 @@ class SimulatorRuleCondition(SimulatorItem):
         valid, _, node = self.expression_parser.validate_expression(
             self.condition, is_formula=False
         )
-        assert valid == True and node is not None
+        assert valid and node is not None
         return self.expression_parser.evaluate_node(node)
 
     def set_parent(self, value):

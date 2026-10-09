@@ -24,9 +24,9 @@ LOG_LEVEL_PATH = os.path.join(TMP, "urh_log_level")
 
 def read_log_level(default):
     try:
-        with open(LOG_LEVEL_PATH, "r") as f:
+        with open(LOG_LEVEL_PATH) as f:
             return int(f.readlines()[0].strip())
-    except:
+    except Exception:
         return default
 
 
@@ -34,7 +34,7 @@ def save_log_level():
     try:
         with open(LOG_LEVEL_PATH, "w") as f:
             f.write(str(logger.level))
-    except:
+    except Exception:
         pass
 
 
@@ -47,14 +47,14 @@ log_file_handler = None
 if hasattr(sys, "frozen"):
     try:
         sys.stdin.isatty()
-    except:
+    except Exception:
         # STDIN is not usable, so we are running in GUI mode
         logfile_name = os.path.join(TMP, "urh.log")
         # Add the log message handler to the logger
         import logging.handlers
 
         log_file_handler = logging.handlers.RotatingFileHandler(
-            logfile_name, maxBytes=2e6, backupCount=5
+            logfile_name, maxBytes=2_000_000, backupCount=5
         )
 
 logging.basicConfig(**logger_conf)
@@ -69,7 +69,7 @@ for level, level_color in logging_colors_per_level.items():
     if sys.platform != "win32":
         logging.addLevelName(
             level,
-            "{0}{1}{2}".format(level_color, logging.getLevelName(level), Color.END),
+            f"{level_color}{logging.getLevelName(level)}{Color.END}",
         )
 
 logger = logging.getLogger("urh")

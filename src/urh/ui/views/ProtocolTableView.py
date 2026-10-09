@@ -46,7 +46,7 @@ class ProtocolTableView(TableView):
         self.addAction(self.ref_message_action)
         self.addAction(self.hide_row_action)
 
-        self.zero_hide_offsets = dict()
+        self.zero_hide_offsets = {}
 
     def model(self) -> ProtocolTableModel:
         return super().model()
@@ -54,7 +54,7 @@ class ProtocolTableView(TableView):
     @property
     def selected_messages(self):
         messages = self.model().protocol.messages
-        rows = set(i.row() for i in self.selectionModel().selectedIndexes())
+        rows = {i.row() for i in self.selectionModel().selectedIndexes()}
         return [messages[i] for i in rows]
 
     def selectionChanged(
@@ -172,7 +172,7 @@ class ProtocolTableView(TableView):
         hidden_rows = self.model().hidden_rows
         if len(hidden_rows) > 0:
             show_row_action = menu.addAction(
-                self.tr("Show all rows (reset {0:d} hidden)".format(len(hidden_rows)))
+                self.tr(f"Show all rows (reset {len(hidden_rows):d} hidden)")
             )
             show_row_action.triggered.connect(self.on_show_row_action_triggered)
 
@@ -301,7 +301,7 @@ class ProtocolTableView(TableView):
     def on_show_in_interpretation_action_triggered(self):
         min_row, max_row, start, end = self.selection_range()
 
-        offsets = self.zero_hide_offsets.get(min_row, dict())
+        offsets = self.zero_hide_offsets.get(min_row, {})
         start += sum(offsets[i] for i in offsets if i <= start)
         end += sum(offsets[i] for i in offsets if i <= end)
 

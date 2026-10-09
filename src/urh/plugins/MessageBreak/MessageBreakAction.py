@@ -45,12 +45,12 @@ class MessageBreakAction(QUndoCommand):
         :rtype: list[tuple of int]
         """
 
-        result = []
+        result: list[tuple[int, int]] = []
         if following_zeros > len(message):
             return result
 
         zero_counter = 0
-        for i in range(0, len(message)):
+        for i in range(len(message)):
             if message[i] == "0":
                 zero_counter += 1
             else:

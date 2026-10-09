@@ -18,23 +18,21 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QTableWidgetIt
 from urh import settings
 from urh.util.Logger import logger
 
-PROJECT_PATH = None  # for referencing in external program calls
+PROJECT_PATH: str | None = None  # for referencing in external program calls
 
 BCD_ERROR_SYMBOL = "?"
-BCD_LUT = {
-    "{0:04b}".format(i): str(i) if i < 10 else BCD_ERROR_SYMBOL for i in range(16)
-}
-BCD_REVERSE_LUT = {str(i): "{0:04b}".format(i) for i in range(10)}
+BCD_LUT = {f"{i:04b}": str(i) if i < 10 else BCD_ERROR_SYMBOL for i in range(16)}
+BCD_REVERSE_LUT = {str(i): f"{i:04b}" for i in range(10)}
 BCD_REVERSE_LUT[BCD_ERROR_SYMBOL] = "0000"
 
-DEFAULT_PROGRAMS_WINDOWS = {}
+DEFAULT_PROGRAMS_WINDOWS: dict[str, str] = {}
 
 
 def profile(func):
     def func_wrapper(*args):
         t = time.perf_counter()
         result = func(*args)
-        print("{} took {:.2f}ms".format(func, 1000 * (time.perf_counter() - t)))
+        print(f"{func} took {1000 * (time.perf_counter() - t):.2f}ms")
         return result
 
     return func_wrapper
@@ -43,7 +41,6 @@ def profile(func):
 def set_icon_theme():
     if sys.platform != "linux" or settings.read("icon_theme_index", 0, int) == 0:
         # noinspection PyUnresolvedReferences
-        import urh.ui.xtra_icons_rc
 
         QIcon.setThemeName("oxy")
     else:
@@ -150,10 +147,7 @@ def convert_bits_to_string(
 
     elif output_view_type == 1:  # hex
         result = "".join(
-            [
-                "{0:x}".format(int(bits_str[i : i + 4], 2))
-                for i in range(0, len(bits_str), 4)
-            ]
+            [f"{int(bits_str[i : i + 4], 2):x}" for i in range(0, len(bits_str), 4)]
         )
 
     elif output_view_type == 2:  # ascii
@@ -194,7 +188,7 @@ def hex2bit(hex_str: str) -> array.array:
         hex_str = hex_str[2:]
 
     try:
-        bitstring = "".join("{0:04b}".format(int(h, 16)) for h in hex_str)
+        bitstring = "".join(f"{int(h, 16):04b}" for h in hex_str)
         return array.array("B", [True if x == "1" else False for x in bitstring])
     except (TypeError, ValueError) as e:
         logger.error(e)
@@ -208,7 +202,7 @@ def ascii2bit(ascii_str: str) -> array.array:
         return array.array("B", [])
 
     try:
-        bitstring = "".join("{0:08b}".format(ord(c)) for c in ascii_str)
+        bitstring = "".join(f"{ord(c):08b}" for c in ascii_str)
         return array.array("B", [True if x == "1" else False for x in bitstring])
     except (TypeError, ValueError) as e:
         logger.error(e)
@@ -219,13 +213,13 @@ def ascii2bit(ascii_str: str) -> array.array:
 
 def decimal2bit(number: str, num_bits: int) -> array.array:
     try:
-        number = int(number)
+        value = int(number)
     except ValueError as e:
         logger.error(e)
         return array.array("B", [])
 
     fmt_str = "{0:0" + str(num_bits) + "b}"
-    return array.array("B", map(int, fmt_str.format(number)))
+    return array.array("B", map(int, fmt_str.format(value)))
 
 
 def bcd2bit(value: str) -> array.array:
@@ -250,7 +244,7 @@ def convert_string_to_bits(
     elif display_format == 4:
         result = bcd2bit(value)
     else:
-        raise ValueError("Unknown display format {}".format(display_format))
+        raise ValueError(f"Unknown display format {display_format}")
 
     if len(result) == 0:
         raise ValueError("Error during conversion.")
@@ -314,8 +308,8 @@ def convert_numbers_to_hex_string(arr: np.ndarray):
     :param arr:
     :return:
     """
-    lut = {i: "{0:x}".format(i) for i in range(16)}
-    return "".join(lut[x] if x in lut else " {} ".format(x) for x in arr)
+    lut = {i: f"{i:x}" for i in range(16)}
+    return "".join(lut[x] if x in lut else f" {x} " for x in arr)
 
 
 def clip(value, minimum, maximum):
@@ -324,7 +318,7 @@ def clip(value, minimum, maximum):
 
 def file_can_be_opened(filename: str):
     try:
-        open(filename, "r").close()
+        open(filename).close()
         return True
     except Exception as e:
         if not isinstance(e, FileNotFoundError):
@@ -413,27 +407,32 @@ def parse_command(command: str):
     ):
         # Path relative to project path
         cmd = os.path.normpath(os.path.join(PROJECT_PATH, cmd))
-    cmd = [cmd]
+    cmd_parts = [cmd]
 
     # This is for legacy support, if you have filenames with spaces and did not quote them
-    while shutil.which(" ".join(cmd)) is None and len(splitted) > 0:
-        cmd.append(splitted.pop(0))
+    while shutil.which(" ".join(cmd_parts)) is None and len(splitted) > 0:
+        cmd_parts.append(splitted.pop(0))
 
-    return " ".join(cmd), splitted
+    return " ".join(cmd_parts), splitted
 
 
 def run_command(
-    command, param: str = None, use_stdin=False, detailed_output=False, return_rc=False
+    command,
+    param: str | None = None,
+    use_stdin=False,
+    detailed_output=False,
+    return_rc=False,
 ):
     cmd, arg = parse_command(command)
     if shutil.which(cmd) is None:
-        logger.error("Could not find {}".format(cmd))
+        logger.error(f"Could not find {cmd}")
         return ""
 
     startupinfo = None
     if os.name == "nt":
-        startupinfo = subprocess.STARTUPINFO()
-        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        # Windows-only; guarded by the os.name check above.
+        startupinfo = subprocess.STARTUPINFO()  # type: ignore[attr-defined]
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # type: ignore[attr-defined]
         if "." in cmd:
             default_app = get_default_windows_program_for_extension(cmd.split(".")[-1])
             if default_app:
@@ -455,9 +454,9 @@ def run_command(
             out, err = p.communicate()
             result = "{} exited with {}".format(" ".join(call_list), p.returncode)
             if out.decode():
-                result += " stdout: {}".format(out.decode())
+                result += f" stdout: {out.decode()}"
             if err.decode():
-                result += " stderr: {}".format(err.decode())
+                result += f" stderr: {err.decode()}"
 
             if return_rc:
                 return result, p.returncode
@@ -471,8 +470,8 @@ def run_command(
                 stderr=subprocess.PIPE,
                 startupinfo=startupinfo,
             )
-            param = param.encode() if param is not None else None
-            out, _ = p.communicate(param)
+            stdin_data = param.encode() if param is not None else None
+            out, _ = p.communicate(stdin_data)
             if return_rc:
                 return out.decode(), p.returncode
             else:
@@ -488,7 +487,7 @@ def run_command(
                 call_list, stderr=subprocess.PIPE, startupinfo=startupinfo
             ).decode()
     except Exception as e:
-        msg = "Could not run {} ({})".format(cmd, e)
+        msg = f"Could not run {cmd} ({e})"
         logger.error(msg)
         if detailed_output:
             return msg
@@ -509,18 +508,18 @@ def set_splitter_stylesheet(splitter: QSplitter):
     bgcolor = settings.BGCOLOR.lighter(150)
     r, g, b, a = bgcolor.red(), bgcolor.green(), bgcolor.blue(), bgcolor.alpha()
     splitter.setStyleSheet(
-        "QSplitter::handle:vertical {{margin: 4px 0px; "
+        "QSplitter::handle:vertical {margin: 4px 0px; "
         "background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, "
         "stop:0.2 rgba(255, 255, 255, 0),"
-        "stop:0.5 rgba({0}, {1}, {2}, {3}),"
+        f"stop:0.5 rgba({r}, {g}, {b}, {a}),"
         "stop:0.8 rgba(255, 255, 255, 0));"
-        "image: url(:/icons/icons/splitter_handle_horizontal.svg);}}"
-        "QSplitter::handle:horizontal {{margin: 4px 0px; "
+        "image: url(:/icons/icons/splitter_handle_horizontal.svg);}"
+        "QSplitter::handle:horizontal {margin: 4px 0px; "
         "background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, "
         "stop:0.2 rgba(255, 255, 255, 0),"
-        "stop:0.5 rgba({0}, {1}, {2}, {3}),"
+        f"stop:0.5 rgba({r}, {g}, {b}, {a}),"
         "stop:0.8 rgba(255, 255, 255, 0));"
-        "image: url(:/icons/icons/splitter_handle_vertical.svg);}}".format(r, g, b, a)
+        "image: url(:/icons/icons/splitter_handle_vertical.svg);}"
     )
 
 

@@ -131,7 +131,7 @@ class Signal(QObject):
         elif sample_width == 4:
             params = {"min": -2147483648, "max": 2147483647, "fmt": np.int32}
         else:
-            raise ValueError("Can't handle sample width {0}".format(sample_width))
+            raise ValueError(f"Can't handle sample width {sample_width}")
 
         params["center"] = (params["min"] + params["max"]) / 2
 
@@ -163,9 +163,7 @@ class Signal(QObject):
             )
         else:
             raise ValueError(
-                "Can't handle {0} channels. Only 1 and 2 are supported.".format(
-                    num_channels
-                )
+                f"Can't handle {num_channels} channels. Only 1 and 2 are supported."
             )
 
         wav.close()
@@ -178,7 +176,7 @@ class Signal(QObject):
         params = {"min": 0, "max": 255, "fmt": np.uint8}
         params["center"] = (params["min"] + params["max"]) / 2
         arr = []
-        with open(filename, "r") as subfile:
+        with open(filename) as subfile:
             for line in subfile:
                 dataline = re.match(r"RAW_Data:\s*([-0-9 ]+)\s*$", line)
                 if dataline:
@@ -194,9 +192,7 @@ class Signal(QObject):
                                 arr.extend(np.zeros(-intval, dtype=params["fmt"]))
                         except ValueError:
                             logger.warning(
-                                "Skipped invalid value {0} in sub file {1}.\nLine <{2}>\nValues:<{3}>\n".format(
-                                    value, filename, line, values
-                                )
+                                f"Skipped invalid value {value} in sub file {filename}.\nLine <{line}>\nValues:<{values}>\n"
                             )
         self.iq_array = IQArray(None, np.float32, n=len(arr))
         self.iq_array.real = np.multiply(
@@ -499,9 +495,7 @@ class Signal(QObject):
             return np.ceil(maximum * 10**num_digits) / 10**num_digits
         except ValueError:
             logger.warning(
-                "Could not calculate noise threshold for range {}-{}".format(
-                    noise_start, noise_end
-                )
+                f"Could not calculate noise threshold for range {noise_start}-{noise_end}"
             )
             return self.noise_threshold_relative
 

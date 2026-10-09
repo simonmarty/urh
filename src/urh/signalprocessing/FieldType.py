@@ -5,7 +5,7 @@ from xml.dom import minidom
 from urh import settings
 
 
-class FieldType(object):
+class FieldType:
     __slots__ = ["caption", "function", "display_format_index"]
 
     class Function(Enum):
@@ -50,9 +50,7 @@ class FieldType(object):
         )
 
     def __repr__(self):
-        return "FieldType: {0} - {1} ({2})".format(
-            self.function.name, self.caption, self.display_format_index
-        )
+        return f"FieldType: {self.function.name} - {self.caption} ({self.display_format_index})"
 
     @staticmethod
     def from_caption(caption: str):

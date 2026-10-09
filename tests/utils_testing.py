@@ -29,16 +29,7 @@ def trace_calls(frame, event, arg):
         start, end = "", ""
 
     print(
-        "%s Call to %s on line %s of %s from line %s of %s %s"
-        % (
-            start,
-            func_name,
-            func_line_no,
-            func_filename,
-            caller_line_no,
-            caller_filename,
-            end,
-        )
+        f"{start} Call to {func_name} on line {func_line_no} of {func_filename} from line {caller_line_no} of {caller_filename} {end}"
     )
     return
 

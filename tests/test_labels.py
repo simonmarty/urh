@@ -28,7 +28,7 @@ class TestLabels(QtTestCase):
 
     def test_show_labels_only(self):
         self.cframe.ui.chkBoxOnlyShowLabelsInProtocol.setChecked(True)
-        for i in range(0, 40):
+        for i in range(40):
             self.assertFalse(
                 self.cframe.ui.tblViewProtocol.isColumnHidden(i), msg="Bit " + str(i)
             )
@@ -41,7 +41,7 @@ class TestLabels(QtTestCase):
             )
 
         self.cframe.ui.cbProtoView.setCurrentIndex(1)  # Hex View
-        for i in range(0, 10):
+        for i in range(10):
             self.assertFalse(
                 self.cframe.ui.tblViewProtocol.isColumnHidden(i), msg="Hex " + str(i)
             )

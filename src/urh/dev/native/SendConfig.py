@@ -5,7 +5,7 @@ import numpy as np
 from urh.util.RingBuffer import RingBuffer
 
 
-class SendConfig(object):
+class SendConfig:
     def __init__(
         self,
         send_buffer,

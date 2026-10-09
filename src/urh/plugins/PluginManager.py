@@ -2,11 +2,11 @@ import importlib
 import os
 
 from urh import settings
-from urh.plugins.Plugin import Plugin, ProtocolPlugin
+from urh.plugins.Plugin import ProtocolPlugin
 from urh.util.Logger import logger
 
 
-class PluginManager(object):
+class PluginManager:
     def __init__(self):
         self.plugin_path = os.path.dirname(os.path.realpath(__file__))
         self.installed_plugins = self.load_installed_plugins()
@@ -37,7 +37,7 @@ class PluginManager(object):
                     plugin.enabled = False
                 result.append(plugin)
             except ImportError as e:
-                logger.warning("Could not load plugin {0} ({1})".format(d, e))
+                logger.warning(f"Could not load plugin {d} ({e})")
                 continue
 
         return result

@@ -93,9 +93,7 @@ class SignalFrame(QFrame):
         self.project_manager = project_manager
 
         self.proto_analyzer = proto_analyzer
-        self.signal = (
-            proto_analyzer.signal if self.proto_analyzer is not None else None
-        )  # type: Signal
+        self.signal = proto_analyzer.signal if self.proto_analyzer is not None else None  # type: Signal
         self.ui.gvSignal.protocol = self.proto_analyzer
         self.ui.gvSignal.set_signal(self.signal)
         self.ui.sliderFFTWindowSize.setValue(
@@ -162,8 +160,8 @@ class SignalFrame(QFrame):
                 self.ui.lSignalTyp.setText("Complex Signal")
 
             self.ui.lineEditSignalName.setText(self.signal.name)
-            self.ui.lSamplesInView.setText("{0:,}".format(self.signal.num_samples))
-            self.ui.lSamplesTotal.setText("{0:,}".format(self.signal.num_samples))
+            self.ui.lSamplesInView.setText(f"{self.signal.num_samples:,}")
+            self.ui.lSamplesTotal.setText(f"{self.signal.num_samples:,}")
             self.sync_protocol = self.ui.chkBoxSyncSelection.isChecked()
             self.ui.chkBoxSyncSelection.hide()
 
@@ -434,8 +432,9 @@ class SignalFrame(QFrame):
             self.__set_duration()
 
         try:
-            start, end = int(self.ui.gvSignal.selection_area.start), int(
-                self.ui.gvSignal.selection_area.end
+            start, end = (
+                int(self.ui.gvSignal.selection_area.start),
+                int(self.ui.gvSignal.selection_area.end),
             )
             power_str = "-\u221e"  # minus infinity
             if start < end:
@@ -449,7 +448,7 @@ class SignalFrame(QFrame):
                 if power > 0:
                     power_str = Formatter.big_value_with_suffix(10 * np.log10(power), 2)
 
-            self.ui.labelRSSI.setText("{} dBm".format(power_str))
+            self.ui.labelRSSI.setText(f"{power_str} dBm")
 
         except Exception as e:
             logger.exception(e)
@@ -537,9 +536,7 @@ class SignalFrame(QFrame):
             drag.exec()
 
     def set_filter_button_caption(self):
-        self.ui.btnFilter.setText(
-            "Filter ({0})".format(self.dsp_filter.filter_type.value)
-        )
+        self.ui.btnFilter.setText(f"Filter ({self.dsp_filter.filter_type.value})")
 
     def dragMoveEvent(self, event):
         event.accept()
@@ -616,7 +613,7 @@ class SignalFrame(QFrame):
             try:
                 self.setCursor(Qt.CursorShape.WaitCursor)
                 data = self.signal.qad
-                if filename.endswith(".wav") or filename.endswith(".sub"):
+                if filename.endswith((".wav", ".sub")):
                     data = self.signal.qad.astype(np.float32)
                     data /= np.max(np.abs(data))
                 FileOperator.save_data(
@@ -829,9 +826,7 @@ class SignalFrame(QFrame):
         self.deleteLater()
 
     def __handle_graphic_view_zoomed(self, graphic_view):
-        self.ui.lSamplesInView.setText(
-            "{0:n}".format(int(graphic_view.view_rect().width()))
-        )
+        self.ui.lSamplesInView.setText(f"{int(graphic_view.view_rect().width()):n}")
         self.ui.spinBoxXZoom.blockSignals(True)
         self.ui.spinBoxXZoom.setValue(
             int(
@@ -1266,16 +1261,16 @@ class SignalFrame(QFrame):
     def __set_samples_in_view(self):
         if self.spectrogram_is_active:
             self.ui.lSamplesInView.setText(
-                "{0:n}".format(int(self.ui.gvSpectrogram.view_rect().width()))
+                f"{int(self.ui.gvSpectrogram.view_rect().width()):n}"
             )
             self.ui.lSamplesTotal.setText(
-                "{0:n}".format(self.ui.gvSpectrogram.width_spectrogram)
+                f"{self.ui.gvSpectrogram.width_spectrogram:n}"
             )
         else:
             self.ui.lSamplesInView.setText(
-                "{0:n}".format(int(self.ui.gvSignal.view_rect().width()))
+                f"{int(self.ui.gvSignal.view_rect().width()):n}"
             )
-            self.ui.lSamplesTotal.setText("{0:n}".format(self.signal.num_samples))
+            self.ui.lSamplesTotal.setText(f"{self.signal.num_samples:n}")
 
     def refresh_signal(self, draw_full_signal=False):
         self.draw_signal(draw_full_signal)
@@ -1337,8 +1332,9 @@ class SignalFrame(QFrame):
             self.proto_analyzer.qt_signals.protocol_updated.emit()
 
     def resizeEvent(self, event: QResizeEvent):
-        old_width, new_width = max(1, event.oldSize().width()), max(
-            1, event.size().width()
+        old_width, new_width = (
+            max(1, event.oldSize().width()),
+            max(1, event.size().width()),
         )
         super().resizeEvent(event)
         self.on_slider_y_scale_value_changed()
@@ -1581,9 +1577,7 @@ class SignalFrame(QFrame):
         )
         signal.name = (
             self.signal.name
-            + " filtered with f_low={0:.4n} f_high={1:.4n} bw={2:.4n}".format(
-                f_low, f_high, filter_bw
-            )
+            + f" filtered with f_low={f_low:.4n} f_high={f_high:.4n} bw={filter_bw:.4n}"
         )
         self.signal_created.emit(signal)
         QApplication.restoreOverrideCursor()

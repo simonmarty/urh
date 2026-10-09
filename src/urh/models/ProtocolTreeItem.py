@@ -5,12 +5,11 @@ import copy
 from PyQt6.QtCore import Qt
 
 from urh.signalprocessing.Encoding import Encoding
-from urh.signalprocessing.Message import Message
 from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 from urh.signalprocessing.ProtocolGroup import ProtocolGroup
 
 
-class ProtocolTreeItem(object):
+class ProtocolTreeItem:
     def __init__(self, data: ProtocolAnalyzer or ProtocolGroup, parent):
         """
 
@@ -20,9 +19,7 @@ class ProtocolTreeItem(object):
         """
         self.__itemData = data
         self.__parentItem = parent
-        self.__childItems = (
-            data.items if type(data) == ProtocolGroup else []
-        )  # type: list[ProtocolTreeItem]
+        self.__childItems = data.items if type(data) is ProtocolGroup else []  # type: list[ProtocolTreeItem]
 
         self.copy_data = False  # For Writeable Mode in CFC
         self.__data_copy = None  # For Writeable Mode in CFC
@@ -32,16 +29,12 @@ class ProtocolTreeItem(object):
         if isinstance(self.__itemData, ProtocolAnalyzer):
             if self.copy_data:
                 if self.__data_copy is None:
-                    self.__data_copy = copy.deepcopy(
-                        self.__itemData
-                    )  # type: ProtocolAnalyzer
+                    self.__data_copy = copy.deepcopy(self.__itemData)  # type: ProtocolAnalyzer
 
                     # keep message types
                     self.__data_copy.message_types = self.__itemData.message_types
                     nrz = Encoding([""])
-                    for i, message in enumerate(
-                        self.__data_copy.messages
-                    ):  # type: Message
+                    for i, message in enumerate(self.__data_copy.messages):  # type: Message
                         decoded_bits = message.decoded_bits
                         message.decoder = nrz
                         message.plain_bits = decoded_bits
@@ -59,11 +52,11 @@ class ProtocolTreeItem(object):
 
     @property
     def is_group(self):
-        return type(self.__itemData) == ProtocolGroup
+        return type(self.__itemData) is ProtocolGroup
 
     @property
     def group(self):
-        if type(self.__itemData) == ProtocolGroup:
+        if type(self.__itemData) is ProtocolGroup:
             return self.__itemData
         else:
             return None

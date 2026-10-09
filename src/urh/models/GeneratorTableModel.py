@@ -8,7 +8,6 @@ from urh import settings
 from urh.models.ProtocolTreeItem import ProtocolTreeItem
 from urh.models.TableModel import TableModel
 from urh.signalprocessing.ChecksumLabel import ChecksumLabel
-from urh.signalprocessing.Encoding import Encoding
 from urh.signalprocessing.Message import Message
 from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 from urh.signalprocessing.ProtocolAnalyzerContainer import ProtocolAnalyzerContainer

@@ -2,7 +2,6 @@ from PyQt6.QtCore import QAbstractListModel, Qt, QModelIndex
 from PyQt6.QtGui import QFont
 
 from urh import settings
-from urh.plugins import Plugin
 
 
 class PluginListModel(QAbstractListModel):

@@ -60,11 +60,11 @@ class KillerDoubleSpinBox(QDoubleSpinBox):
         return result + suffix
 
     def valueFromText(self, text: str):
-        if text.endswith("G") or text.endswith("g"):
+        if text.endswith(("G", "g")):
             return QLocale().toDouble(text[:-1])[0] * 10**9
-        elif text.endswith("M") or text.endswith("m"):
+        elif text.endswith(("M", "m")):
             return QLocale().toDouble(text[:-1])[0] * 10**6
-        elif text.endswith("K") or text.endswith("k"):
+        elif text.endswith(("K", "k")):
             return QLocale().toDouble(text[:-1])[0] * 10**3
         else:
             return QLocale().toDouble(text.rstrip(self.suffix()))[0]
@@ -73,7 +73,7 @@ class KillerDoubleSpinBox(QDoubleSpinBox):
         if self.suffix().upper() in ("", "K", "M", "G"):
             rx = QRegularExpression("^(-?[0-9]+)[.]?[0-9]*[kKmMgG]?$")
         else:
-            rx = QRegularExpression("^(-?[0-9]+)[.]?[0-9]*[{}]?$".format(self.suffix()))
+            rx = QRegularExpression(f"^(-?[0-9]+)[.]?[0-9]*[{self.suffix()}]?$")
         result = (
             QValidator.State.Acceptable
             if rx.match(inpt.replace(",", ".")).hasMatch()

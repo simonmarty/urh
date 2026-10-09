@@ -1,6 +1,6 @@
 import os
 
-from PyQt6.QtCore import QModelIndex, pyqtSlot, QFileInfo, pyqtSignal, QUrl
+from PyQt6.QtCore import QModelIndex, pyqtSlot, pyqtSignal, QUrl
 from PyQt6.QtGui import QContextMenuEvent, QIcon, QDesktopServices
 from PyQt6.QtWidgets import QTreeView, QInputDialog, QMessageBox, QMenu
 
@@ -50,16 +50,14 @@ class DirectoryTreeView(QTreeView):
             QMessageBox.information(
                 self,
                 self.tr("Remove"),
-                self.tr("Failed to remove {0}".format(model.fileName(index))),
+                self.tr(f"Failed to remove {model.fileName(index)}"),
             )
 
     def create_context_menu(self) -> QMenu:
         menu = QMenu(self)
         index = self.model().mapToSource(self.currentIndex())  # type: QModelIndex
         if index.isValid():
-            current_index_info = (
-                self.model().sourceModel().fileInfo(index)
-            )  # type: QFileInfo
+            current_index_info = self.model().sourceModel().fileInfo(index)  # type: QFileInfo
             if current_index_info.isDir():
                 if os.path.isfile(
                     os.path.join(current_index_info.filePath(), settings.PROJECT_FILE)
@@ -101,8 +99,8 @@ class DirectoryTreeView(QTreeView):
 
         if file_path.endswith(".txt"):
             try:
-                content = open(file_path, "r").read()
-            except:
+                content = open(file_path).read()
+            except Exception:
                 return
             d = util.create_textbox_dialog(content, file_path, self)
             d.show()

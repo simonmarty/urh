@@ -125,12 +125,12 @@ class CSVImportDialog(QDialog):
     def parse_csv_line(
         csv_line: str, i_data_col: int, q_data_col: int, timestamp_col: int
     ):
-        result = dict()
+        result = {}
 
         if i_data_col >= 0:
             try:
                 result["I"] = float(csv_line[i_data_col])
-            except:
+            except Exception:
                 return None
         else:
             result["I"] = 0.0
@@ -138,7 +138,7 @@ class CSVImportDialog(QDialog):
         if q_data_col >= 0:
             try:
                 result["Q"] = float(csv_line[q_data_col])
-            except:
+            except Exception:
                 return None
         else:
             result["Q"] = 0.0
@@ -146,7 +146,7 @@ class CSVImportDialog(QDialog):
         if timestamp_col >= 0:
             try:
                 result["T"] = float(csv_line[timestamp_col])
-            except:
+            except Exception:
                 return None
 
         return result

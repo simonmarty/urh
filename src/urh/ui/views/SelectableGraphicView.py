@@ -4,7 +4,6 @@ from PyQt6.QtWidgets import QGraphicsView
 
 from urh import settings
 from urh.ui.painting.HorizontalSelection import HorizontalSelection
-from urh.ui.painting.SceneManager import SceneManager
 from urh.ui.painting.ZoomableScene import ZoomableScene
 from urh.util import util
 

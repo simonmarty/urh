@@ -7,7 +7,6 @@ import numpy
 
 from urh.models.ProtocolTreeItem import ProtocolTreeItem
 from urh.signalprocessing.Message import Message
-from urh.signalprocessing.Modulator import Modulator
 from urh.signalprocessing.ProtocoLabel import ProtocolLabel
 from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 from urh.signalprocessing.ProtocolGroup import ProtocolGroup
@@ -42,7 +41,7 @@ class ProtocolAnalyzerContainer(ProtocolAnalyzer):
 
     @property
     def protocol_labels(self):
-        result = list(set(lbl for msg in self.messages for lbl in msg.message_type))
+        result = list({lbl for msg in self.messages for lbl in msg.message_type})
         result.sort()
         return result
 
@@ -97,9 +96,12 @@ class ProtocolAnalyzerContainer(ProtocolAnalyzer):
                 num_values = (
                     numpy.max([len(l.fuzz_values) for l in labels]) if labels else 0
                 )
-                f = lambda index, label: index if index < len(label.fuzz_values) else 0
+
+                def clamp_index(index, label):
+                    return index if index < len(label.fuzz_values) else 0
+
                 combinations = [
-                    [(l.start, l.end, l.fuzz_values[f(j, l)]) for l in labels]
+                    [(l.start, l.end, l.fuzz_values[clamp_index(j, l)]) for l in labels]
                     for j in range(1, num_values)
                 ]
             elif mode == FuzzMode.exhaustive:

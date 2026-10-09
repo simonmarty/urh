@@ -1,9 +1,7 @@
-from urh.signalprocessing.Encoding import Encoding
 from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
-from urh.signalprocessing.Message import Message
 
 
-class ProtocolGroup(object):
+class ProtocolGroup:
     __slots__ = ["name", "__items", "loaded_from_file"]
 
     def __init__(self, name: str):
@@ -84,7 +82,7 @@ class ProtocolGroup(object):
             return None
 
     def __repr__(self):
-        return "Group: {0}".format(self.name)
+        return f"Group: {self.name}"
 
     def add_protocol_item(self, protocol_item):
         """

@@ -33,7 +33,7 @@ class Rad1o(Device):
         ret = hackrf.setup(device_identifier)
         msg = "SETUP"
         if device_identifier:
-            msg += " ({})".format(device_identifier)
+            msg += f" ({device_identifier})"
         msg += ": " + str(ret)
         ctrl_connection.send(msg)
 

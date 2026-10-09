@@ -2,7 +2,7 @@ import uuid
 import xml.etree.ElementTree as ET
 
 
-class Participant(object):
+class Participant:
     __slots__ = [
         "name",
         "shortname",
@@ -49,9 +49,9 @@ class Participant(object):
 
     def __repr__(self):
         if self.address_hex:
-            return "{0} ({1}) [{2}]".format(self.name, self.shortname, self.address_hex)
+            return f"{self.name} ({self.shortname}) [{self.address_hex}]"
         else:
-            return "{0} ({1})".format(self.name, self.shortname)
+            return f"{self.name} ({self.shortname})"
 
     def __str__(self):
         return repr(self)

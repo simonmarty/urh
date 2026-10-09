@@ -6,7 +6,7 @@ import time
 from tests.docker import docker_util
 
 
-class VMHelper(object):
+class VMHelper:
     def __init__(
         self,
         vm_name: str,
@@ -23,25 +23,23 @@ class VMHelper(object):
         self.__vm_is_up = False
 
     def start_vm(self):
-        call('VBoxManage startvm "{0}"'.format(self.vm_name), shell=True)
+        call(f'VBoxManage startvm "{self.vm_name}"', shell=True)
 
     def stop_vm(self, save=True):
         if save:
-            call(
-                'VBoxManage controlvm "{0}" savestate'.format(self.vm_name), shell=True
-            )
+            call(f'VBoxManage controlvm "{self.vm_name}" savestate', shell=True)
             return
         if self.use_ssh:
             self.send_command("sudo shutdown -h now")
         else:
             call(
-                'VBoxManage controlvm "{0}" acpipowerbutton'.format(self.vm_name),
+                f'VBoxManage controlvm "{self.vm_name}" acpipowerbutton',
                 shell=True,
             )
 
     def wait_for_vm_up(self):
         if not self.__vm_is_up:
-            print("Waiting for {} to come up.".format(self.vm_name))
+            print(f"Waiting for {self.vm_name} to come up.")
             command = "ping -c 1" if self.use_ssh else "ping -n 1"
             command += " github.com"
 
@@ -64,14 +62,14 @@ class VMHelper(object):
                 "ssh",
                 "-p",
                 str(self.ssh_port),
-                "{0}@127.0.0.1".format(self.ssh_username),
-                '"{0}"'.format(command),
+                f"{self.ssh_username}@127.0.0.1",
+                f'"{command}"',
             ]
         else:
             fullcmd = (
-                ["VBoxManage", "guestcontrol", '"{0}"'.format(self.vm_name), "run"]
+                ["VBoxManage", "guestcontrol", f'"{self.vm_name}"', "run"]
                 + self.shell.split(" ")
-                + ['"{0}"'.format(command)]
+                + [f'"{command}"']
             )
 
         kwargs = {"stdout": DEVNULL, "stderr": DEVNULL} if hide_output else {}
@@ -129,12 +127,12 @@ class TestInstallation(unittest.TestCase):
         vm_helper = VMHelper("Windows 10", shell="cmd.exe /c")
         vm_helper.start_vm()
         vm_helper.send_command("pip uninstall urh")
-        vm_helper.send_command("rd /s /q {0}".format(target_dir))
+        vm_helper.send_command(f"rd /s /q {target_dir}")
         vm_helper.send_command("git clone https://github.com/jopohl/urh " + target_dir)
         rc = vm_helper.send_command(r"python C:\urh\src\urh\cythonext\build.py")
         self.assertEqual(rc, 0)
 
-        rc = vm_helper.send_command(r"py.test C:\urh\tests".format(target_dir))
+        rc = vm_helper.send_command(r"py.test C:\urh\tests")
         self.assertEqual(rc, 0)
 
         vm_helper.send_command("pip install urh")
@@ -156,27 +154,21 @@ class TestInstallation(unittest.TestCase):
 
         python_bin_dir = "/Library/Frameworks/Python.framework/Versions/3.5/bin/"
         target_dir = "/tmp/urh"
-        vm_helper.send_command("rm -rf {0}".format(target_dir))
+        vm_helper.send_command(f"rm -rf {target_dir}")
         vm_helper.send_command("git clone https://github.com/jopohl/urh " + target_dir)
 
         # Build extensions
         rc = vm_helper.send_command(
-            "{0}python3 {1}/src/urh/cythonext/build.py".format(
-                python_bin_dir, target_dir
-            )
+            f"{python_bin_dir}python3 {target_dir}/src/urh/cythonext/build.py"
         )
         self.assertEqual(rc, 0)
 
         # Run Unit tests
-        rc = vm_helper.send_command(
-            "{1}py.test {0}/tests".format(target_dir, python_bin_dir)
-        )
+        rc = vm_helper.send_command(f"{python_bin_dir}py.test {target_dir}/tests")
         self.assertEqual(rc, 0)
 
-        vm_helper.send_command(
-            "{0}pip3 --no-cache-dir install urh".format(python_bin_dir)
-        )
-        rc = vm_helper.send_command("{0}urh autoclose".format(python_bin_dir))
+        vm_helper.send_command(f"{python_bin_dir}pip3 --no-cache-dir install urh")
+        rc = vm_helper.send_command(f"{python_bin_dir}urh autoclose")
         self.assertEqual(rc, 0)
-        vm_helper.send_command("{0}pip3 uninstall --yes urh".format(python_bin_dir))
+        vm_helper.send_command(f"{python_bin_dir}pip3 uninstall --yes urh")
         vm_helper.stop_vm()

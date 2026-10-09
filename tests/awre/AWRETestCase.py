@@ -10,7 +10,6 @@ from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 
 from urh.signalprocessing.MessageType import MessageType
 
-from urh.awre.MessageTypeBuilder import MessageTypeBuilder
 from urh.awre.ProtocolGenerator import ProtocolGenerator
 from urh.signalprocessing.FieldType import FieldType
 
@@ -58,7 +57,7 @@ class AWRETestCase(unittest.TestCase):
             protocol_generator.to_file(filename)
         elif isinstance(protocol_generator, ProtocolAnalyzer):
             participants = list(
-                set(msg.participant for msg in protocol_generator.messages)
+                {msg.participant for msg in protocol_generator.messages}
             )
             protocol_generator.to_xml_file(
                 filename, [], participants=participants, write_bits=True

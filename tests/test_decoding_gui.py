@@ -61,7 +61,7 @@ class TestDecodingGUI(QtTestCase):
 
         self.assertEqual(len(chain), self.dialog.ui.decoderchain.count())
 
-        for i in range(0, self.dialog.ui.decoderchain.count()):
+        for i in range(self.dialog.ui.decoderchain.count()):
             self.dialog.ui.decoderchain.setCurrentRow(i)
             self.dialog.set_information(2)
             self.assertIn(chain[i][0], self.dialog.ui.info.text())
@@ -83,14 +83,14 @@ class TestDecodingGUI(QtTestCase):
         self.assertEqual(self.dialog.ui.inpt.text(), "")
 
     def test_select_items(self):
-        for i in range(0, self.dialog.ui.basefunctions.count()):
+        for i in range(self.dialog.ui.basefunctions.count()):
             self.dialog.ui.basefunctions.setCurrentRow(i)
             self.assertIn(
                 self.dialog.ui.basefunctions.currentItem().text(),
                 self.dialog.ui.info.text(),
             )
 
-        for i in range(0, self.dialog.ui.additionalfunctions.count()):
+        for i in range(self.dialog.ui.additionalfunctions.count()):
             self.dialog.ui.additionalfunctions.setCurrentRow(i)
             self.assertIn(
                 self.dialog.ui.additionalfunctions.currentItem().text(),

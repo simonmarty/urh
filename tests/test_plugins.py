@@ -4,7 +4,6 @@ from PyQt6.QtTest import QTest
 from PyQt6.QtWidgets import QApplication
 
 from tests.QtTestCase import QtTestCase
-from urh.controller.CompareFrameController import CompareFrameController
 from urh.plugins.MessageBreak.MessageBreakPlugin import MessageBreakPlugin
 from urh.plugins.NetworkSDRInterface.NetworkSDRInterfacePlugin import (
     NetworkSDRInterfacePlugin,
@@ -12,7 +11,6 @@ from urh.plugins.NetworkSDRInterface.NetworkSDRInterfacePlugin import (
 from urh.plugins.ZeroHide.ZeroHidePlugin import ZeroHidePlugin
 from urh.signalprocessing.MessageType import MessageType
 from urh.signalprocessing.ProtocoLabel import ProtocolLabel
-from urh.ui.views.ZoomableGraphicView import ZoomableGraphicView
 from urh.util.Formatter import Formatter
 
 

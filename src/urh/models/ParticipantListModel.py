@@ -1,5 +1,4 @@
 from PyQt6.QtCore import QAbstractListModel, Qt, QModelIndex, pyqtSignal
-from urh.signalprocessing.Participant import Participant
 
 
 class ParticipantListModel(QAbstractListModel):

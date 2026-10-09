@@ -8,7 +8,7 @@ import numpy as np
 from urh.cythonext.util import get_magnitudes
 
 
-class IQArray(object):
+class IQArray:
     def __init__(self, data: np.ndarray, dtype=None, n=None, skip_conversion=False):
         if data is None:
             self.__data = np.zeros((n, 2), dtype, order="C")
@@ -113,13 +113,13 @@ class IQArray(object):
         self.__data = self.__data[mask]
 
     def tofile(self, filename: str):
-        if filename.endswith(".complex16u") or filename.endswith(".cu8"):
+        if filename.endswith((".complex16u", ".cu8")):
             self.convert_to(np.uint8).tofile(filename)
-        elif filename.endswith(".complex16s") or filename.endswith(".cs8"):
+        elif filename.endswith((".complex16s", ".cs8")):
             self.convert_to(np.int8).tofile(filename)
-        elif filename.endswith(".complex32u") or filename.endswith(".cu16"):
+        elif filename.endswith((".complex32u", ".cu16")):
             self.convert_to(np.uint16).tofile(filename)
-        elif filename.endswith(".complex32s") or filename.endswith(".cs16"):
+        elif filename.endswith((".complex32s", ".cs16")):
             self.convert_to(np.int16).tofile(filename)
         else:
             self.convert_to(np.float32).tofile(filename)
@@ -197,7 +197,7 @@ class IQArray(object):
                 ).astype(np.uint16)
 
         if target_dtype not in (np.uint8, np.int8, np.uint16, np.int16, np.float32):
-            raise ValueError("Data type {} not supported".format(target_dtype))
+            raise ValueError(f"Data type {target_dtype} not supported")
 
         raise NotImplementedError(
             "Conversion from {} to {} not supported", self.__data.dtype, target_dtype
@@ -205,22 +205,22 @@ class IQArray(object):
 
     @staticmethod
     def from_file(filename: str):
-        if filename.endswith(".complex16u") or filename.endswith(".cu8"):
+        if filename.endswith((".complex16u", ".cu8")):
             # two 8 bit unsigned integers
             return IQArray(
                 IQArray(data=np.fromfile(filename, dtype=np.uint8)).convert_to(np.int8)
             )
-        elif filename.endswith(".complex16s") or filename.endswith(".cs8"):
+        elif filename.endswith((".complex16s", ".cs8")):
             # two 8 bit signed integers
             return IQArray(data=np.fromfile(filename, dtype=np.int8))
-        elif filename.endswith(".complex32u") or filename.endswith(".cu16"):
+        elif filename.endswith((".complex32u", ".cu16")):
             # two 16 bit unsigned integers
             return IQArray(
                 IQArray(data=np.fromfile(filename, dtype=np.uint16)).convert_to(
                     np.int16
                 )
             )
-        elif filename.endswith(".complex32s") or filename.endswith(".cs16"):
+        elif filename.endswith((".complex32s", ".cs16")):
             # two 16 bit signed integers
             return IQArray(data=np.fromfile(filename, dtype=np.int16))
         else:
@@ -277,6 +277,7 @@ class IQArray(object):
     ):
         arr = []
         counter = 0
+        lastvalue = None
 
         for value in self.convert_to(np.uint8):
             # if origin was a sub-file value is uint8, else value is [uint8, uint8]
@@ -286,9 +287,7 @@ class IQArray(object):
                 value = value[0]
 
             # set lastvalue to value for first run
-            try:
-                lastvalue
-            except:
+            if lastvalue is None:
                 lastvalue = value
 
             # increase counter while values do not change
@@ -301,19 +300,20 @@ class IQArray(object):
                     counter = 1
                     lastvalue = value
         # save last value
-        arr.append(counter if lastvalue > 127 else -counter)
+        if lastvalue is not None:
+            arr.append(counter if lastvalue > 127 else -counter)
 
         with open(filename, "w") as subfile:
             subfile.write("Filetype: Flipper SubGhz RAW File\n")
             subfile.write("Version: 1\n")
-            subfile.write("Frequency: {}\n".format(frequency))
-            subfile.write("Preset: {}\n".format(preset))
+            subfile.write(f"Frequency: {frequency}\n")
+            subfile.write(f"Preset: {preset}\n")
             subfile.write("Protocol: RAW")  # Skip last \n
             # Write data
             for idx in range(len(arr)):
                 if idx % 512 == 0:
                     subfile.write("\n")
-                    subfile.write("RAW_Data: {}".format(arr[idx]))
+                    subfile.write(f"RAW_Data: {arr[idx]}")
                 else:
-                    subfile.write(" {}".format(arr[idx]))
+                    subfile.write(f" {arr[idx]}")
             subfile.write("\n")

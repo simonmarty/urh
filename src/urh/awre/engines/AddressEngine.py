@@ -50,11 +50,9 @@ class AddressEngine(Engine):
             self.message_indices_by_participant[participant_index].append(i)
 
         if known_participant_addresses is None:
-            self.known_addresses_by_participant = dict()  # type: dict[int, np.ndarray]
+            self.known_addresses_by_participant = {}  # type: dict[int, np.ndarray]
         else:
-            self.known_addresses_by_participant = (
-                known_participant_addresses
-            )  # type: dict[int, np.ndarray]
+            self.known_addresses_by_participant = known_participant_addresses  # type: dict[int, np.ndarray]
 
     @staticmethod
     def cross_swap_check(rng1: CommonRange, rng2: CommonRange):
@@ -122,8 +120,9 @@ class AddressEngine(Engine):
 
         # Look for cross swapped values between participant clusters
         for p1, p2 in itertools.combinations(ranges_by_participant, 2):
-            ranges1_set, ranges2_set = set(ranges_by_participant[p1]), set(
-                ranges_by_participant[p2]
+            ranges1_set, ranges2_set = (
+                set(ranges_by_participant[p1]),
+                set(ranges_by_participant[p2]),
             )
 
             for rng1, rng2 in itertools.product(
@@ -172,7 +171,7 @@ class AddressEngine(Engine):
                 key=lambda cr: (-cr.score, cr),
             )
             if len(sorted_ranges) == 0:
-                addresses_by_participant[participant] = dict()
+                addresses_by_participant[participant] = {}
                 continue
 
             addresses_by_participant[participant] = {
@@ -309,7 +308,7 @@ class AddressEngine(Engine):
     def __assign_participant_addresses(
         self, addresses_by_participant, high_scored_ranges_by_participant
     ):
-        scored_participants_addresses = dict()
+        scored_participants_addresses = {}
         for participant in addresses_by_participant:
             scored_participants_addresses[participant] = defaultdict(int)
 
@@ -382,8 +381,10 @@ class AddressEngine(Engine):
                 found_address = max(
                     sorted(
                         filter(
-                            lambda a: a not in taken_addresses
-                            and addresses[a] >= minimum_score,
+                            lambda a: (
+                                a not in taken_addresses
+                                and addresses[a] >= minimum_score
+                            ),
                             addresses,
                         ),
                         reverse=True,
@@ -472,9 +473,9 @@ class AddressEngine(Engine):
         already_assigned = list(self.known_addresses_by_participant.keys())
         if len(already_assigned) == len(self.message_indices_by_participant):
             self._debug("Skipping find addresses as already known.")
-            return dict()
+            return {}
 
-        common_ranges_by_participant = dict()
+        common_ranges_by_participant = {}
         for participant, message_indices in self.message_indices_by_participant.items():
             # Cluster by length
             length_clusters = defaultdict(list)
@@ -506,9 +507,7 @@ class AddressEngine(Engine):
                 for i in already_assigned
             ):
                 logger.warning(
-                    "Addresses do not have a common length. Assuming length of {}".format(
-                        addr_len
-                    )
+                    f"Addresses do not have a common length. Assuming length of {addr_len}"
                 )
         else:
             addr_len = None

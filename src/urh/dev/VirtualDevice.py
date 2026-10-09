@@ -83,7 +83,7 @@ class VirtualDevice(QObject):
                     name.lower()
                 ].selected_backend
             except KeyError:
-                logger.warning("Invalid device name: {0}".format(name))
+                logger.warning(f"Invalid device name: {name}")
                 self.backend = Backends.none
                 self.__dev = None
                 return
@@ -256,7 +256,7 @@ class VirtualDevice(QObject):
                     )
                 else:
                     raise NotImplementedError(
-                        "Native Backend for {0} not yet implemented".format(name)
+                        f"Native Backend for {name} not yet implemented"
                     )
 
             elif name == "test":
@@ -271,7 +271,7 @@ class VirtualDevice(QObject):
                     resume_on_full_receive_buffer,
                 )
             else:
-                raise ValueError("Unknown device name {0}".format(name))
+                raise ValueError(f"Unknown device name {name}")
             self.__dev.portnumber = portnumber
             self.__dev.device_ip = device_ip
             if mode == Mode.send:
@@ -496,7 +496,7 @@ class VirtualDevice(QObject):
     def sample_rate(self):
         try:
             return self.__dev.sample_rate
-        except:
+        except Exception:
             return 1e6
 
     @sample_rate.setter
@@ -631,9 +631,7 @@ class VirtualDevice(QObject):
             else:
                 self.__dev.receive_buffer = value
         else:
-            logger.warning(
-                "{}:{} has no data".format(self.__class__.__name__, self.backend.name)
-            )
+            logger.warning(f"{self.__class__.__name__}:{self.backend.name} has no data")
 
     @property
     def data_timestamp(self):
@@ -642,7 +640,7 @@ class VirtualDevice(QObject):
                 self.__data_timestamp = (
                     self.__dev.first_data_timestamp
                 )  # more accurate timestamp
-            except:
+            except Exception:
                 pass
         return self.__data_timestamp
 

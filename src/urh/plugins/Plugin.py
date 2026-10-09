@@ -50,7 +50,7 @@ class Plugin(QObject):
     def load_description(self):
         descr_file = os.path.join(self.plugin_path, "descr.txt")
         try:
-            with open(descr_file, "r") as f:
+            with open(descr_file) as f:
                 self.description = f.read()
         except Exception as e:
             print(e)

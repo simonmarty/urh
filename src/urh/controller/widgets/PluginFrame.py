@@ -22,7 +22,7 @@ class PluginFrame(QFrame):
         self.create_connects()
 
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
     def create_connects(self):

@@ -4,7 +4,7 @@ from multiprocessing import Value, Array
 from urh.signalprocessing.IQArray import IQArray
 
 
-class RingBuffer(object):
+class RingBuffer:
     """
     A RingBuffer containing complex values.
     """

@@ -4,7 +4,6 @@ from PyQt6.QtWidgets import QApplication
 
 from urh import settings
 from urh.signalprocessing.FieldType import FieldType
-from urh.signalprocessing.MessageType import MessageType
 from urh.signalprocessing.ProtocoLabel import ProtocolLabel
 from urh.simulator.SimulatorProtocolLabel import SimulatorProtocolLabel
 from urh.util import util
@@ -125,7 +124,7 @@ class SimulatorMessageFieldModel(QAbstractTableModel):
             lbl = self.message_type[index.row()]  # type: SimulatorProtocolLabel
             if index.column() == 2 and lbl.is_checksum_label:
                 return True
-        except:
+        except Exception:
             return False
         return False
 

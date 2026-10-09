@@ -1,5 +1,4 @@
 import numpy as np
-import time
 
 from urh.dev.native.Device import Device
 from urh.dev.native.lib import airspy

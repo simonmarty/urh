@@ -21,7 +21,7 @@ class PlutoSDR(Device):
     @classmethod
     def get_device_list(cls):
         descs, uris = plutosdr.scan_devices()
-        return ["{} [{}]".format(desc, uri) for desc, uri in zip(descs, uris)]
+        return [f"{desc} [{uri}]" for desc, uri in zip(descs, uris)]
 
     @classmethod
     def adapt_num_read_samples_to_sample_rate(cls, sample_rate):
@@ -48,7 +48,7 @@ class PlutoSDR(Device):
                 return False
 
         ret = plutosdr.open(device_identifier)
-        ctrl_connection.send("OPEN ({}):{}".format(device_identifier, ret))
+        ctrl_connection.send(f"OPEN ({device_identifier}):{ret}")
         return ret == 0
 
     @classmethod

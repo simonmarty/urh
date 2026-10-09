@@ -72,7 +72,7 @@ class SimulatorScene(QGraphicsScene):
 
         self.items_dict = {}
 
-        self.on_items_added([item for item in self.simulator_config.rootItem.children])
+        self.on_items_added(list(self.simulator_config.rootItem.children))
 
         self.create_connects()
 
@@ -556,7 +556,7 @@ class SimulatorScene(QGraphicsScene):
 
     def clear_all(self):
         self.simulator_config.delete_items(
-            [item for item in self.simulator_config.rootItem.children]
+            list(self.simulator_config.rootItem.children)
         )
 
     def add_protocols(self, ref_item, position, protocols_to_add: list):

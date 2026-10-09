@@ -16,7 +16,7 @@ class ChangeSignalParameter(QUndoCommand):
     ):
         super().__init__()
         if not hasattr(signal, parameter_name):
-            raise ValueError("signal has no attribute {}".format(parameter_name))
+            raise ValueError(f"signal has no attribute {parameter_name}")
 
         self.signal = signal
         self.parameter_name = parameter_name

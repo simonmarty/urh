@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import QFileDialog
 from urh.signalprocessing.IQArray import IQArray
 from urh.util.Errors import Errors
 
-archives = {}
+archives: dict[str, str] = {}
 """:type: dict of [str, str]
    :param: archives[extracted_filename] = filename"""
 
@@ -37,7 +37,7 @@ SIGNAL_NAME_FILTERS_BY_TYPE = {
 
 EVERYTHING_FILE_FILTER = "All Files (*)"
 
-SIGNAL_NAME_FILTERS = list(sorted(set(SIGNAL_NAME_FILTERS_BY_TYPE.values())))
+SIGNAL_NAME_FILTERS = sorted(set(SIGNAL_NAME_FILTERS_BY_TYPE.values()))
 
 COMPRESSED_COMPLEX_FILE_FILTER = "Compressed Complex File (*.coco)"
 WAV_FILE_FILTER = "Waveform Audio File Format (*.wav *.wave)"
@@ -199,9 +199,7 @@ def save_data(data, filename: str, sample_rate=1e6, num_channels=2):
         archive = archives[filename]
         if archive.endswith("zip"):
             rewrite_zip(archive)
-        elif (
-            archive.endswith("tar") or archive.endswith("bz2") or archive.endswith("gz")
-        ):
+        elif archive.endswith(("tar", "bz2", "gz")):
             rewrite_tar(archive)
 
 
@@ -233,7 +231,7 @@ def rewrite_tar(tar_name: str):
         ext = "" if len(compression) == 0 else "." + compression
         temp_name = os.path.join(tempdir, "new.tar" + ext)
         files_in_archive = [f for f in archives.keys() if archives[f] == tar_name]
-        with tarfile.open(temp_name, "w:" + compression) as tar_write:
+        with tarfile.open(temp_name, "w:" + compression) as tar_write:  # type: ignore[call-overload]
             for file in files_in_archive:
                 tar_write.add(file)
         shutil.move(temp_name, tar_name)
@@ -252,11 +250,7 @@ def uncompress_archives(file_names, temp_dir):
     """
     result = []
     for filename in file_names:
-        if (
-            filename.endswith(".tar")
-            or filename.endswith(".tar.gz")
-            or filename.endswith(".tar.bz2")
-        ):
+        if filename.endswith((".tar", ".tar.gz", ".tar.bz2")):
             obj = tarfile.open(filename, "r")
             extracted_file_names = []
             for j, member in enumerate(obj.getmembers()):

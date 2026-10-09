@@ -35,9 +35,7 @@ class TestCSVImportDialog(QtTestCase):
             f.write("Timestamp I Q Trash\n")
 
             for i in range(150):
-                f.write(
-                    "{},{},{},{}\n".format(i / 1e6, i, random.uniform(0, 1), 42 * i)
-                )
+                f.write(f"{i / 1e6},{i},{random.uniform(0, 1)},{42 * i}\n")
 
         self.dialog.ui.lineEditFilename.setText(filename)
         self.dialog.ui.lineEditFilename.editingFinished.emit()
@@ -81,7 +79,7 @@ class TestCSVImportDialog(QtTestCase):
             f.write("I;Trash\n")
 
             for i in range(20):
-                f.write("{};{}\n".format(i, 24 * i))
+                f.write(f"{i};{24 * i}\n")
 
         self.dialog.ui.lineEditFilename.setText(filename)
         self.dialog.ui.lineEditFilename.editingFinished.emit()

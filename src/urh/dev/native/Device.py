@@ -19,7 +19,7 @@ from urh.util.Logger import logger
 util.set_shared_library_path()
 
 
-class Device(object):
+class Device:
     JOIN_TIMEOUT = 1.0
 
     SYNC_TX_CHUNK_SIZE = 0
@@ -83,9 +83,7 @@ class Device(object):
                     next_allowed = min(allowed_values, key=lambda x: abs(x - value))
                     if value != next_allowed:
                         ctrl_connection.send(
-                            "{}: {} not in range of supported values. Assuming {}".format(
-                                tag, value, next_allowed
-                            )
+                            f"{tag}: {value} not in range of supported values. Assuming {next_allowed}"
                         )
                         value = next_allowed
                 except (KeyError, AttributeError):
@@ -94,7 +92,7 @@ class Device(object):
                 ret = getattr(cls.DEVICE_LIB, method_name)(value)
                 if isinstance(value, int) or isinstance(value, float):
                     value = Formatter.big_value_with_suffix(value)
-                ctrl_connection.send("{0} to {1}:{2}".format(tag, value, ret))
+                ctrl_connection.send(f"{tag} to {value}:{ret}")
             except AttributeError as e:
                 logger.warning(str(e))
 
@@ -265,11 +263,9 @@ class Device(object):
             time.sleep(0.75)
 
         if exit_requested:
-            logger.debug(
-                "{}: exit requested. Stopping sending".format(cls.__class__.__name__)
-            )
+            logger.debug(f"{cls.__class__.__name__}: exit requested. Stopping sending")
         if send_config.sending_is_finished():
-            logger.debug("{}: sending is finished.".format(cls.__class__.__name__))
+            logger.debug(f"{cls.__class__.__name__}: sending is finished.")
 
         cls.shutdown_device(ctrl_connection, is_tx=True)
         ctrl_connection.close()
@@ -437,22 +433,16 @@ class Device(object):
 
         if retcode == self.success:
             if msg:
-                formatted_message = "{0}-{1} ({2}): Success".format(
-                    type(self).__name__, action, msg
-                )
+                formatted_message = f"{type(self).__name__}-{action} ({msg}): Success"
             else:
-                formatted_message = "{0}-{1}: Success".format(
-                    type(self).__name__, action
-                )
+                formatted_message = f"{type(self).__name__}-{action}: Success"
             logger.info(formatted_message)
         else:
             if msg:
-                formatted_message = "{0}-{1} ({4}): {2} ({3})".format(
-                    type(self).__name__, action, error_code_msg, retcode, msg
-                )
+                formatted_message = f"{type(self).__name__}-{action} ({msg}): {error_code_msg} ({retcode})"
             else:
-                formatted_message = "{0}-{1}: {2} ({3})".format(
-                    type(self).__name__, action, error_code_msg, retcode
+                formatted_message = (
+                    f"{type(self).__name__}-{action}: {error_code_msg} ({retcode})"
                 )
             logger.error(formatted_message)
 
@@ -679,7 +669,7 @@ class Device(object):
         self.parent_ctrl_conn, self.child_ctrl_conn = Pipe()
 
         self.is_receiving = True
-        logger.info("{0}: Starting RX Mode".format(self.__class__.__name__))
+        logger.info(f"{self.__class__.__name__}: Starting RX Mode")
         self.receive_process = Process(
             target=self.receive_process_function, args=self.receive_process_arguments
         )
@@ -698,15 +688,13 @@ class Device(object):
         except (BrokenPipeError, OSError) as e:
             logger.debug("Closing parent control connection: " + str(e))
 
-        logger.info("{0}: Stopping RX Mode: {1}".format(self.__class__.__name__, msg))
+        logger.info(f"{self.__class__.__name__}: Stopping RX Mode: {msg}")
 
         if hasattr(self, "receive_process") and self.receive_process.is_alive():
             self.receive_process.join(self.JOIN_TIMEOUT)
             if self.receive_process.is_alive():
                 logger.warning(
-                    "{0}: Receive process is still alive, terminating it".format(
-                        self.__class__.__name__
-                    )
+                    f"{self.__class__.__name__}: Receive process is still alive, terminating it"
                 )
                 self.receive_process.terminate()
                 self.receive_process.join()
@@ -730,7 +718,7 @@ class Device(object):
         self.parent_ctrl_conn, self.child_ctrl_conn = Pipe()
         self.init_send_parameters(samples_to_send, repeats, resume=resume)
 
-        logger.info("{0}: Starting TX Mode".format(self.__class__.__name__))
+        logger.info(f"{self.__class__.__name__}: Starting TX Mode")
 
         self.transmit_process = Process(
             target=self.send_process_function, args=self.send_process_arguments
@@ -746,15 +734,13 @@ class Device(object):
         except (BrokenPipeError, OSError) as e:
             logger.debug("Closing parent control connection: " + str(e))
 
-        logger.info("{0}: Stopping TX Mode: {1}".format(self.__class__.__name__, msg))
+        logger.info(f"{self.__class__.__name__}: Stopping TX Mode: {msg}")
 
         if hasattr(self, "transmit_process") and self.transmit_process.is_alive():
             self.transmit_process.join(self.JOIN_TIMEOUT)
             if self.transmit_process.is_alive():
                 logger.warning(
-                    "{0}: Transmit process is still alive, terminating it".format(
-                        self.__class__.__name__
-                    )
+                    f"{self.__class__.__name__}: Transmit process is still alive, terminating it"
                 )
                 self.transmit_process.terminate()
                 self.transmit_process.join()
@@ -788,9 +774,7 @@ class Device(object):
                     return_code = splitted[-1]
                     self.log_retcode(int(return_code), action)
                 except ValueError:
-                    self.device_messages.append(
-                        "{0}: {1}".format(self.__class__.__name__, message)
-                    )
+                    self.device_messages.append(f"{self.__class__.__name__}: {message}")
             except (EOFError, UnpicklingError, OSError, ConnectionResetError) as e:
                 logger.info("Exiting read device message thread due to " + str(e))
                 break
@@ -836,10 +820,7 @@ class Device(object):
                         n_samples = len(self.receive_buffer) - 1
                 else:
                     self.stop_rx_mode(
-                        "Receiving buffer is full {0}/{1}".format(
-                            self.current_recv_index + n_samples,
-                            len(self.receive_buffer),
-                        )
+                        f"Receiving buffer is full {self.current_recv_index + n_samples}/{len(self.receive_buffer)}"
                     )
                     return
 

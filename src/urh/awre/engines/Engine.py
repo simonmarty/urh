@@ -1,16 +1,14 @@
-from urh.awre.CommonRange import CommonRange
 from urh.awre.Histogram import Histogram
-import numpy as np
 from urh.cythonext import awre_util
 import itertools
 
 
-class Engine(object):
+class Engine:
     _DEBUG_ = False
 
     def _debug(self, *args):
         if self._DEBUG_:
-            print("[{}]".format(self.__class__.__name__), *args)
+            print(f"[{self.__class__.__name__}]", *args)
 
     @staticmethod
     def find_common_ranges_by_cluster(

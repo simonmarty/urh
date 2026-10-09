@@ -12,7 +12,7 @@ class Fuzz(QUndoCommand):
         self.proto_analyzer_container = proto_analyzer_container
         self.fuz_mode = fuz_mode
 
-        self.setText("{0} Fuzzing".format(self.fuz_mode))
+        self.setText(f"{self.fuz_mode} Fuzzing")
         self.added_message_indices = []
 
     def redo(self):

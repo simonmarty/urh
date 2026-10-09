@@ -7,7 +7,7 @@ from urh.util import util
 from urh.util.GenericCRC import GenericCRC
 
 
-class WSPChecksum(object):
+class WSPChecksum:
     """
     This class implements the three checksums from Wireless Short Packet (WSP) standard
     http://hes-standards.org/doc/SC25_WG1_N1493.pdf
@@ -34,7 +34,7 @@ class WSPChecksum(object):
     def __hash__(self):
         return hash(self.mode)
 
-    def calculate(self, msg: array.array) -> array.array:
+    def calculate(self, msg: array.array) -> array.array | None:
         """
         Get the checksum for a WSP message. There are three hashes possible:
         1) 4 Bit Checksum - For Switch Telegram (RORG=5 or 6 and STATUS = 0x20 or 0x30)
@@ -64,6 +64,8 @@ class WSPChecksum(object):
 
         except IndexError:
             return None
+
+        return None
 
     @classmethod
     def search_for_wsp_checksum(cls, bits_behind_sync):
@@ -99,14 +101,14 @@ class WSPChecksum(object):
         for i in range(0, len(val), 8):
             hash += int("".join(map(str, map(int, val[i : i + 8]))), 2)
         hash = (((hash & 0xF0) >> 4) + (hash & 0x0F)) & 0x0F
-        return array.array("B", list(map(bool, map(int, "{0:04b}".format(hash)))))
+        return array.array("B", list(map(bool, map(int, f"{hash:04b}"))))
 
     @classmethod
     def checksum8(cls, bits: array.array) -> array.array:
         hash = 0
         for i in range(0, len(bits) - 8, 8):
             hash += int("".join(map(str, map(int, bits[i : i + 8]))), 2)
-        return array.array("B", list(map(bool, map(int, "{0:08b}".format(hash % 256)))))
+        return array.array("B", list(map(bool, map(int, f"{hash % 256:08b}"))))
 
     @classmethod
     def crc8(cls, bits: array.array):

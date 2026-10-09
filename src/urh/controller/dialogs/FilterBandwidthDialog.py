@@ -29,7 +29,7 @@ class FilterBandwidthDialog(QDialog):
                     None,
                 )
                 if key is not None and name.endswith("Bandwidth"):
-                    item.setText("{0:n}".format(Filter.BANDWIDTHS[key]))
+                    item.setText(f"{Filter.BANDWIDTHS[key]:n}")
                 elif key is not None and name.endswith("KernelLength"):
                     item.setText(
                         str(

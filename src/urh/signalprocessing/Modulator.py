@@ -14,7 +14,7 @@ from urh.ui.painting.ZoomableScene import ZoomableScene
 from urh.util.Formatter import Formatter
 
 
-class Modulator(object):
+class Modulator:
     FORCE_DTYPE = None
 
     MODULATION_TYPES = ["ASK", "FSK", "PSK", "GFSK", "OQPSK"]
@@ -278,7 +278,7 @@ class Modulator(object):
     @staticmethod
     def __get_gray_code_indices(n: int):
         result = []
-        for i in range(0, n):
+        for i in range(n):
             result.append(i ^ (i >> 1))
         return result
 

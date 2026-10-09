@@ -1,4 +1,4 @@
-class SimulatorItem(object):
+class SimulatorItem:
     simulator_config = None
     expression_parser = None
 

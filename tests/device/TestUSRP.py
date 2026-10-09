@@ -1,13 +1,11 @@
 from multiprocessing.connection import Pipe
 
-import sys
 
 from urh.util import util
 
 util.set_shared_library_path()
 
 
-from urh.dev.native.USRP import USRP
 from urh.dev.native.lib import usrp
 import unittest
 

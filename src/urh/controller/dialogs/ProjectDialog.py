@@ -9,7 +9,6 @@ from urh import settings
 from urh.controller.dialogs.SpectrumDialogController import SpectrumDialogController
 from urh.dev import config
 from urh.models.ParticipantTableModel import ParticipantTableModel
-from urh.signalprocessing.Participant import Participant
 from urh.ui.ui_project import Ui_ProjectDialog
 from urh.util import FileOperator
 from urh.util.Errors import Errors
@@ -90,7 +89,7 @@ class ProjectDialog(QDialog):
 
         self.on_line_edit_path_text_edited()
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
     @property
@@ -149,9 +148,7 @@ class ProjectDialog(QDialog):
         self.ui.lblNewPath.setVisible(not os.path.isdir(self.path))
 
     def closeEvent(self, event: QCloseEvent):
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
         super().closeEvent(event)
 
     @pyqtSlot(float)

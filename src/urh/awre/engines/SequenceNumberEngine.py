@@ -36,14 +36,14 @@ class SequenceNumberEngine(Engine):
             return []
 
         diff_matrix = self.create_difference_matrix(self.bitvectors, self.n_gram_length)
-        diff_frequencies_by_column = dict()
+        diff_frequencies_by_column = {}
 
         for j in range(diff_matrix.shape[1]):
             unique, counts = np.unique(diff_matrix[:, j], return_counts=True)
             diff_frequencies_by_column[j] = dict(zip(unique, counts))
 
         self._debug("Diff_frequencies_by_column", diff_frequencies_by_column)
-        scores_by_column = dict()
+        scores_by_column = {}
         for column, frequencies in diff_frequencies_by_column.items():
             if column not in self.already_labeled_cols:
                 scores_by_column[column] = self.calc_score(frequencies)

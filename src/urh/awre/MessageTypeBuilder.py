@@ -5,7 +5,7 @@ from urh.signalprocessing.MessageType import MessageType
 from urh.signalprocessing.ProtocoLabel import ProtocolLabel
 
 
-class MessageTypeBuilder(object):
+class MessageTypeBuilder:
     def __init__(self, name: str):
         self.name = name
         self.message_type = MessageType(name)

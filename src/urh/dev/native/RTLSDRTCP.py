@@ -88,37 +88,37 @@ class RTLSDRTCP(Device):
         ctrl_connection.close()
 
     def process_command(self, command, ctrl_connection, is_tx=False):
-        logger.debug("RTLSDRTCP: {}".format(command))
+        logger.debug(f"RTLSDRTCP: {command}")
         if command == self.Command.STOP.name:
             return self.Command.STOP
 
         tag, value = command
         if tag == self.Command.SET_FREQUENCY.name:
-            logger.info("RTLSDRTCP: Set center freq to {0}".format(int(value)))
+            logger.info(f"RTLSDRTCP: Set center freq to {int(value)}")
             return self.set_parameter("centerFreq", int(value), ctrl_connection)
 
         elif tag == self.Command.SET_RF_GAIN.name:
-            logger.info("RTLSDRTCP: Set tuner gain to {0}".format(int(value)))
+            logger.info(f"RTLSDRTCP: Set tuner gain to {int(value)}")
             return self.set_parameter("tunerGain", int(value), ctrl_connection)
 
         elif tag == self.Command.SET_IF_GAIN.name:
-            logger.info("RTLSDRTCP: Set if gain to {0}".format(int(value)))
+            logger.info(f"RTLSDRTCP: Set if gain to {int(value)}")
             return self.set_parameter("tunerIFGain", int(value), ctrl_connection)
 
         elif tag == self.Command.SET_SAMPLE_RATE.name:
-            logger.info("RTLSDRTCP: Set sample_rate to {0}".format(int(value)))
+            logger.info(f"RTLSDRTCP: Set sample_rate to {int(value)}")
             return self.set_parameter("sampleRate", int(value), ctrl_connection)
 
         elif tag == self.Command.SET_BANDWIDTH.name:
-            logger.info("RTLSDRTCP: Set bandwidth to {0}".format(int(value)))
+            logger.info(f"RTLSDRTCP: Set bandwidth to {int(value)}")
             return self.set_parameter("bandwidth", int(value), ctrl_connection)
 
         elif tag == self.Command.SET_FREQUENCY_CORRECTION.name:
-            logger.info("RTLSDRTCP: Set ppm correction to {0}".format(int(value)))
+            logger.info(f"RTLSDRTCP: Set ppm correction to {int(value)}")
             return self.set_parameter("freqCorrection", int(value), ctrl_connection)
 
         elif tag == self.Command.SET_DIRECT_SAMPLING_MODE.name:
-            logger.info("RTLSDRTCP: Set direct sampling mode to {0}".format(int(value)))
+            logger.info(f"RTLSDRTCP: Set direct sampling mode to {int(value)}")
             return self.set_parameter("directSampling", int(value), ctrl_connection)
 
     def __init__(
@@ -174,15 +174,9 @@ class RTLSDRTCP(Device):
                 self.sock.connect((hostname, port))
             except Exception as e:
                 self.socket_is_open = False
-                logger.info(
-                    "Could not connect to rtl_tcp at {0}:{1} ({2})".format(
-                        hostname, port, e
-                    )
-                )
+                logger.info(f"Could not connect to rtl_tcp at {hostname}:{port} ({e})")
                 ctrl_connection.send(
-                    "Could not connect to rtl_tcp at {0} [{1}] ({2}):1".format(
-                        hostname, port, e
-                    )
+                    f"Could not connect to rtl_tcp at {hostname} [{port}] ({e}):1"
                 )
                 return False
 
@@ -217,21 +211,15 @@ class RTLSDRTCP(Device):
                 self.rf_gain = int.from_bytes(init_data[10:12], self.ENDIAN)
 
                 logger.info(
-                    "Connected to rtl_tcp at {0}:{1} (Tuner: {2}, RF-Gain: {3}, IF-Gain: {4})".format(
-                        hostname, port, self.tuner, self.rf_gain, self.if_gain
-                    )
+                    f"Connected to rtl_tcp at {hostname}:{port} (Tuner: {self.tuner}, RF-Gain: {self.rf_gain}, IF-Gain: {self.if_gain})"
                 )
                 ctrl_connection.send(
-                    "Connected to rtl_tcp at {0}[{1}] (Tuner={2}, RF-Gain={3}, IF-Gain={4}):0".format(
-                        hostname, port, self.tuner, self.rf_gain, self.if_gain
-                    )
+                    f"Connected to rtl_tcp at {hostname}[{port}] (Tuner={self.tuner}, RF-Gain={self.rf_gain}, IF-Gain={self.if_gain}):0"
                 )
             except Exception as e:
                 self.socket_is_open = False
                 logger.info(
-                    "This is not a valid rtl_tcp server at {0}:{1} ({2})".format(
-                        hostname, port, e
-                    )
+                    f"This is not a valid rtl_tcp server at {hostname}:{port} ({e})"
                 )
                 return False
 
@@ -254,12 +242,8 @@ class RTLSDRTCP(Device):
                 self.sock.sendall(msg)  # Send data to rtl_tcp
             except OSError as e:
                 self.sock.close()
-                logger.info(
-                    "Could not set parameter {0}:{1} ({2})".format(param, value, e)
-                )
-                ctrl_connection.send(
-                    "Could not set parameter {0} {1} ({2}):1".format(param, value, e)
-                )
+                logger.info(f"Could not set parameter {param}:{value} ({e})")
+                ctrl_connection.send(f"Could not set parameter {param} {value} ({e}):1")
                 return True
         return False
 

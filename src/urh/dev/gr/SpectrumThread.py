@@ -64,9 +64,7 @@ class SpectrumThread(AbstractBaseThread):
                     len_tmp = len(tmp)
 
                     if self.data is None:
-                        self.data = np.zeros(
-                            self.buf_size, dtype=np.complex64
-                        )  # type: np.ndarray
+                        self.data = np.zeros(self.buf_size, dtype=np.complex64)  # type: np.ndarray
 
                     if self.current_index + len_tmp >= len(self.data):
                         self.data[self.current_index :] = tmp[

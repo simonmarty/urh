@@ -130,7 +130,7 @@ class GeneratorTabController(QWidget):
 
     @modulators.setter
     def modulators(self, value):
-        assert type(value) == list
+        assert type(value) is list
         self.project_manager.modulators = value
 
     def create_connects(self, compare_frame_controller):
@@ -259,7 +259,7 @@ class GeneratorTabController(QWidget):
 
     def refresh_modulators(self):
         current_index = 0
-        if type(self.sender()) == ModulatorDialog:
+        if type(self.sender()) is ModulatorDialog:
             current_index = self.sender().ui.comboBoxCustomModulations.currentIndex()
         self.ui.cBoxModulations.clear()
         for modulator in self.modulators:
@@ -493,9 +493,7 @@ class GeneratorTabController(QWidget):
 
         memory_size_for_buffer = total_samples * n
         logger.debug(
-            "Allocating {0:.2f}MB for modulated samples".format(
-                memory_size_for_buffer / (1024**2)
-            )
+            f"Allocating {memory_size_for_buffer / (1024**2):.2f}MB for modulated samples"
         )
         try:
             # allocate it three times as we need the same amount for the sending process
@@ -520,7 +518,7 @@ class GeneratorTabController(QWidget):
         self.modulation_msg_indices.clear()
 
         pos = 0
-        for i in range(0, self.table_model.row_count):
+        for i in range(self.table_model.row_count):
             message = self.table_model.protocol.messages[i]
             modulator = self.__get_modulator_of_message(message)
             # We do not need to modulate the pause extra, as result is already initialized with zeros
@@ -781,7 +779,7 @@ class GeneratorTabController(QWidget):
             self.show_modulation_info()
             self.refresh_table()
             self.set_fuzzing_ui_status()
-        except:
+        except Exception:
             logger.error("You done something wrong to the xml fuzzing profile.")
 
     @pyqtSlot()

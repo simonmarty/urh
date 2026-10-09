@@ -26,7 +26,7 @@ for sdr in (
     "USRP",
 ):
     try:
-        importlib.import_module(".{}".format(sdr.lower()), "urh.dev.native.lib")
+        importlib.import_module(f".{sdr.lower()}", "urh.dev.native.lib")
         print("{:<10} \033[92mSUCCESS\033[0m".format(sdr + ":"))
     except ImportError as e:
         print("{:<10} \033[91mFAILURE\033[0m ({})".format(sdr + ":", e))

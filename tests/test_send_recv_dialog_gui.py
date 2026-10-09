@@ -4,15 +4,13 @@ import time
 from multiprocessing import Process, Value, Array
 
 import numpy as np
-from PyQt6.QtCore import QDir, QEvent, QPoint, Qt
-from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtCore import QDir
 from PyQt6.QtTest import QTest
 from PyQt6.QtWidgets import QApplication
 
 from tests.QtTestCase import QtTestCase
 from tests.utils_testing import get_path_for_data_file
 from urh import settings
-from urh.controller.GeneratorTabController import GeneratorTabController
 from urh.controller.MainController import MainController
 from urh.controller.dialogs.ContinuousSendDialog import ContinuousSendDialog
 from urh.controller.dialogs.ReceiveDialog import ReceiveDialog
@@ -385,7 +383,7 @@ class TestSendRecvDialog(QtTestCase):
 
         generator_frame.ui.btnNetworkSDRSend.click()
 
-        with open(target_file, "r") as f:
+        with open(target_file) as f:
             for i, line in enumerate(f):
                 pad = 0 if len(orig_msgs[i]) % 8 == 0 else 8 - len(orig_msgs[i]) % 8
                 self.assertEqual(line.strip(), orig_msgs[i] + "0" * pad)

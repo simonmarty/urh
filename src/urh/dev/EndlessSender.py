@@ -5,7 +5,7 @@ from urh.dev.VirtualDevice import Mode, VirtualDevice
 from urh.util.RingBuffer import RingBuffer
 
 
-class EndlessSender(object):
+class EndlessSender:
     """
     Enter endless send mode for a device and send data if data gets pushed to ringbuffer.
     """

@@ -1,7 +1,6 @@
 from PyQt6.QtCore import QAbstractTableModel, pyqtSignal, Qt, QModelIndex
 
 from urh.signalprocessing.Message import Message
-from urh.signalprocessing.MessageType import MessageType
 from urh.signalprocessing.ProtocoLabel import ProtocolLabel
 from urh.simulator.SimulatorProtocolLabel import SimulatorProtocolLabel
 
@@ -114,7 +113,7 @@ class PLabelTableModel(QAbstractTableModel):
 
             lbl = self.__get_label_at(i)
 
-            if type_before != ProtocolLabel or type(lbl) != ProtocolLabel:
+            if type_before != ProtocolLabel or type(lbl) is not ProtocolLabel:
                 self.special_status_label_changed.emit(lbl)
 
         elif j == 1:

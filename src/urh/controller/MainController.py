@@ -197,7 +197,7 @@ class MainController(QMainWindow):
         self.ui.actionClose_project.setVisible(False)
 
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
     def __set_non_project_warning_visibility(self):
@@ -536,11 +536,7 @@ class MainController(QMainWindow):
                 self.add_signalfile(
                     filename, group_id, enforce_sample_rate=enforce_sample_rate
                 )
-            elif (
-                filename.endswith(".proto")
-                or filename.endswith(".proto.xml")
-                or filename.endswith(".bin")
-            ):
+            elif filename.endswith((".proto", ".proto.xml", ".bin")):
                 self.add_protocol_file(filename)
             elif filename.endswith(".wav"):
                 try:
@@ -558,9 +554,9 @@ class MainController(QMainWindow):
                 self.add_signalfile(
                     filename, group_id, enforce_sample_rate=enforce_sample_rate
                 )
-            elif filename.endswith(".fuzz") or filename.endswith(".fuzz.xml"):
+            elif filename.endswith((".fuzz", ".fuzz.xml")):
                 self.add_fuzz_profile(filename)
-            elif filename.endswith(".sim") or filename.endswith(".sim.xml"):
+            elif filename.endswith((".sim", ".sim.xml")):
                 self.add_simulator_profile(filename)
             elif filename.endswith(".txt"):
                 self.add_plain_bits_from_txt(filename)
@@ -584,9 +580,7 @@ class MainController(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent):
         self.save_project()
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
         super().closeEvent(event)
 
     def close_all_files(self):
@@ -755,12 +749,12 @@ class MainController(QMainWindow):
     @pyqtSlot()
     def on_show_about_clicked(self):
         descr = (
-            "<b><h2>Universal Radio Hacker</h2></b>Version: {0}<br />"
+            f"<b><h2>Universal Radio Hacker</h2></b>Version: {version.VERSION}<br />"
             "GitHub: <a href='https://github.com/jopohl/urh'>https://github.com/jopohl/urh</a><br /><br />"
             "Creators:<i><ul><li>"
             "Johannes Pohl &lt;<a href='mailto:joahnnes.pohl90@gmail.com'>johannes.pohl90@gmail.com</a>&gt;</li>"
             "<li>Andreas Noack &lt;<a href='mailto:andreas.noack@hochschule-stralsund.de'>andreas.noack@hochschule-stralsund.de</a>&gt;</li>"
-            "</ul></i>".format(version.VERSION)
+            "</ul></i>"
         )
 
         QMessageBox.about(self, self.tr("About"), self.tr(descr))

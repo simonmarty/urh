@@ -121,7 +121,7 @@ class ParticipantTableModel(QAbstractTableModel):
         )
 
     def __get_initial_name(self) -> (str, str):
-        given_names = set(p.name for p in self.participants)
+        given_names = {p.name for p in self.participants}
         name = next(
             (name for name in self.INITIAL_NAMES if name not in given_names), None
         )
@@ -142,8 +142,8 @@ class ParticipantTableModel(QAbstractTableModel):
         return "Participant X", "X"
 
     def add_participant(self):
-        used_colors = set(p.color_index for p in self.participants)
-        avail_colors = set(range(0, len(settings.PARTICIPANT_COLORS))) - used_colors
+        used_colors = {p.color_index for p in self.participants}
+        avail_colors = set(range(len(settings.PARTICIPANT_COLORS))) - used_colors
         if len(avail_colors) > 0:
             color_index = avail_colors.pop()
         else:
@@ -167,8 +167,9 @@ class ParticipantTableModel(QAbstractTableModel):
                 len(self.participants) - 1,
             )  # delete last element
         else:
-            start, end = min([rng.top() for rng in selection]), max(
-                [rng.bottom() for rng in selection]
+            start, end = (
+                min([rng.top() for rng in selection]),
+                max([rng.bottom() for rng in selection]),
             )
 
         del self.participants[start : end + 1]
@@ -185,7 +186,7 @@ class ParticipantTableModel(QAbstractTableModel):
                     (
                         i
                         for i in range(n)
-                        if i not in set(p.relative_rssi for p in self.participants)
+                        if i not in {p.relative_rssi for p in self.participants}
                     ),
                     0,
                 )
@@ -197,8 +198,9 @@ class ParticipantTableModel(QAbstractTableModel):
         if selection.isEmpty() or len(self.participants) < 1:
             return None, None
 
-        start, end = min([rng.top() for rng in selection]), max(
-            [rng.bottom() for rng in selection]
+        start, end = (
+            min([rng.top() for rng in selection]),
+            max([rng.bottom() for rng in selection]),
         )
         if start == 0:
             return None, None
@@ -218,8 +220,9 @@ class ParticipantTableModel(QAbstractTableModel):
         if selection.isEmpty() or len(self.participants) < 1:
             return None, None
 
-        start, end = min([rng.top() for rng in selection]), max(
-            [rng.bottom() for rng in selection]
+        start, end = (
+            min([rng.top() for rng in selection]),
+            max([rng.bottom() for rng in selection]),
         )
         if end >= len(self.participants) - 1:
             return None, None

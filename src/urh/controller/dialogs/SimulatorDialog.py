@@ -1,5 +1,3 @@
-import time
-
 import numpy as np
 from PyQt6.QtCore import QTimer, pyqtSlot, pyqtSignal, Qt
 from PyQt6.QtGui import QIcon, QCloseEvent
@@ -14,7 +12,6 @@ from urh.dev.BackendHandler import BackendHandler
 from urh.dev.EndlessSender import EndlessSender
 from urh.signalprocessing.IQArray import IQArray
 from urh.simulator.Simulator import Simulator
-from urh.simulator.SimulatorConfiguration import SimulatorConfiguration
 from urh.ui.SimulatorScene import SimulatorScene
 from urh.ui.painting.LiveSceneManager import LiveSceneManager
 from urh.ui.painting.SniffSceneManager import SniffSceneManager
@@ -103,9 +100,9 @@ class SimulatorDialog(QDialog):
             )
             self.ui.graphicsViewPreview.setScene(self.scene_manager.scene)
         else:
-            self.device_settings_rx_widget = (
-                self.sniff_settings_widget
-            ) = self.scene_manager = None
+            self.device_settings_rx_widget = self.sniff_settings_widget = (
+                self.scene_manager
+            ) = None
             self.ui.tabWidgetSimulatorSettings.setTabEnabled(1, False)
             self.ui.graphicsViewPreview.hide()
             self.ui.btnSaveRX.hide()

@@ -5,7 +5,6 @@ from PyQt6.QtGui import QFont
 
 from urh import settings
 from urh.signalprocessing.ChecksumLabel import ChecksumLabel
-from urh.signalprocessing.MessageType import MessageType
 from urh.signalprocessing.ProtocoLabel import ProtocolLabel
 from urh.signalprocessing.ProtocolAnalyzer import ProtocolAnalyzer
 from urh.util import util
@@ -53,9 +52,7 @@ class LabelValueTableModel(QAbstractTableModel):
             return None
 
         if expected_checksum is not None:
-            data += " (should be {0})".format(
-                util.convert_bits_to_string(expected_checksum, lbl.display_format_index)
-            )
+            data += f" (should be {util.convert_bits_to_string(expected_checksum, lbl.display_format_index)})"
 
         return data
 

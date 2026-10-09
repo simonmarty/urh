@@ -166,7 +166,7 @@ class TestAutoAssignments(unittest.TestCase):
         proto1 = ProtocolAnalyzer(None)
         proto2 = ProtocolAnalyzer(None)
 
-        for i in range(0, len(rssis[0])):
+        for i in range(len(rssis[0])):
             message = copy.deepcopy(self.protocol.messages[i])
             message.participant = None
             proto1.messages.append(message)
@@ -174,7 +174,7 @@ class TestAutoAssignments(unittest.TestCase):
 
         self.assertEqual(len(proto1.messages), 21)
 
-        for i in range(0, len(rssis[1])):
+        for i in range(len(rssis[1])):
             message = copy.deepcopy(self.protocol.messages[21 + i])
             message.participant = None
             proto2.messages.append(message)

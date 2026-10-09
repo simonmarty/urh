@@ -7,7 +7,7 @@ from urh.util import util
 from urh.util.GenericCRC import GenericCRC
 
 
-class Encoding(object):
+class Encoding:
     """
     Full featured encoding/decoding of protocols.
     """
@@ -251,7 +251,7 @@ class Encoding(object):
         dst = inpt[1]
         output = ""
         if len(src) == len(dst):
-            for i in range(0, len(src)):
+            for i in range(len(src)):
                 output += self.bit2str(src[i]) + ":" + self.bit2str(dst[i]) + ";"
 
         return output
@@ -388,7 +388,7 @@ class Encoding(object):
 
         if len(self.lfsr_state) == 0:
             self.lfsr_state.extend([True] * len_pol)
-        for i in range(0, clock):
+        for i in range(clock):
             # Determine first bit with polynomial
             first_bit = -1
             for j in range(len_pol - 1, -1, -1):
@@ -426,7 +426,7 @@ class Encoding(object):
         i = inpt_from
         while i < (inpt_to - len_sync):
             equalbits = 0
-            for j in range(0, len_sync):
+            for j in range(len_sync):
                 if inpt[i + j] == self.data_whitening_sync[j]:
                     equalbits += 1
                 else:
@@ -457,7 +457,7 @@ class Encoding(object):
             data_end = inpt_to - 16 - offset
             c = GenericCRC(polynomial="16_standard", start_value=True)
             crc = c.crc(inpt[whitening_start_pos:data_end])
-            for i in range(0, 16):
+            for i in range(16):
                 inpt[data_end + i] = crc[i]
 
         # Apply keystream (xor)
@@ -478,7 +478,7 @@ class Encoding(object):
         if decoding:
             # Remove carrier if decoding
             if len(self.carrier) > 0:
-                for x in range(0, len(inpt)):
+                for x in range(len(inpt)):
                     tmp = self.carrier[x % len(self.carrier)]
                     if tmp not in ("0", "1", "*"):  # Data!
                         output.append(inpt[x])
@@ -499,7 +499,7 @@ class Encoding(object):
                         )  # Add 0 when there is a wildcard (*) in carrier description
                         x += 1
                     tmp = self.carrier[x % len(self.carrier)]
-                    if not tmp in ("0", "1", "*"):
+                    if tmp not in ("0", "1", "*"):
                         output.append(i)
                         x += 1
                 # Consume the trailing carrier pattern avoiding any wrap around
@@ -764,7 +764,7 @@ class Encoding(object):
                     # Cutmark is not valid
                     return inpt, 0, self.ErrorState.INVALID_CUTMARK
 
-                for i in range(0, len(inpt) - len_cutmark):
+                for i in range(len(inpt) - len_cutmark):
                     if all(inpt[i + j] == self.cutmark[j] for j in range(len_cutmark)):
                         pos = i
                         break
@@ -842,9 +842,7 @@ class Encoding(object):
                         [inpt[n + 2] == inpt[n + 3], inpt[n + 6] == inpt[n + 7]]
                     )
                     errors += (
-                        sum([inpt[n + 10] != False, inpt[n + 11] != True])
-                        if n < end - 11
-                        else 0
+                        sum([inpt[n + 10], not inpt[n + 11]]) if n < end - 11 else 0
                     )
                     output.extend(
                         [

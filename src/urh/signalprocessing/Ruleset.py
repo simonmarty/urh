@@ -29,7 +29,7 @@ class Mode(Enum):
     none_applies = 2
 
 
-class Rule(object):
+class Rule:
     def __init__(
         self, start: int, end: int, operator: str, target_value: str, value_type: int
     ):
@@ -49,7 +49,7 @@ class Rule(object):
         try:
             self.__start = int(value)
         except ValueError:
-            logger.warning("{} could not be cast to integer".format(value))
+            logger.warning(f"{value} could not be cast to integer")
 
     @property
     def end(self) -> int:
@@ -60,7 +60,7 @@ class Rule(object):
         try:
             self.__end = int(value)
         except ValueError:
-            logger.warning("{} could not be cast to integer".format(value))
+            logger.warning(f"{value} could not be cast to integer")
 
     @property
     def value_type(self):
@@ -71,7 +71,7 @@ class Rule(object):
         try:
             self.__value_type = int(value)
         except ValueError:
-            logger.warning("{} could not be cast to integer".format(value))
+            logger.warning(f"{value} could not be cast to integer")
 
     def applies_for_message(self, message):
         data = (

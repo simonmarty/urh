@@ -45,7 +45,7 @@ class TestGeneratorTable(QtTestCase):
         self.gframe.table_model.dropMimeData(
             mimedata, 1, -1, -1, self.gframe.table_model.createIndex(0, 0)
         )
-        print("{0}: {1} s".format("Time for dropping mimedata", (time.time() - t)))
+        print("{}: {} s".format("Time for dropping mimedata", (time.time() - t)))
         self.assertEqual(self.gframe.table_model.row_count, self.NUM_MESSAGES)
 
         print("==============================00")
@@ -69,7 +69,7 @@ class TestGeneratorTable(QtTestCase):
             )
             if role == Qt.ItemDataRole.DisplayRole:
                 time_for_display = microseconds
-            print("{0}: {1} µs".format(self.__role_to_str(role), microseconds))
+            print(f"{self.__role_to_str(role)}: {microseconds} µs")
 
     def __build_protocol(self):
         result = ProtocolAnalyzer(signal=None)

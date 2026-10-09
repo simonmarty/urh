@@ -1,16 +1,13 @@
 import copy
 
 from PyQt6.QtCore import QPoint, Qt, QModelIndex
-from PyQt6.QtCore import QTimer
-from PyQt6.QtGui import QContextMenuEvent
 from PyQt6.QtTest import QTest
-from PyQt6.QtWidgets import QApplication, QMenu
+from PyQt6.QtWidgets import QApplication
 
 from tests.QtTestCase import QtTestCase
 from urh.controller.CompareFrameController import CompareFrameController
 from urh.controller.MainController import MainController
 from urh.signalprocessing.FieldType import FieldType
-from urh.ui.views.LabelValueTableView import LabelValueTableView
 
 
 class TestAnalysisTabGUI(QtTestCase):
@@ -329,7 +326,7 @@ class TestAnalysisTabGUI(QtTestCase):
         model = self.cfc.label_value_model
         model.setData(model.index(0, 0), "test", Qt.ItemDataRole.EditRole)
         table_model = self.cfc.protocol_model
-        for i in range(0, 16):
+        for i in range(16):
             self.assertEqual(
                 table_model.data(table_model.index(2, i), Qt.ItemDataRole.ToolTipRole),
                 "test",
@@ -358,7 +355,7 @@ class TestAnalysisTabGUI(QtTestCase):
                 table_model.data(table_model.index(2, i), Qt.ItemDataRole.ToolTipRole),
             )
 
-        for i in range(0, 20):
+        for i in range(20):
             self.assertNotIn(
                 "Expected",
                 table_model.data(table_model.index(2, i), Qt.ItemDataRole.ToolTipRole),

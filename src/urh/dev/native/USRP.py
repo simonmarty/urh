@@ -39,7 +39,7 @@ class USRP(Device):
         ret = usrp.open(device_identifier)
 
         if device_identifier:
-            ctrl_connection.send("OPEN ({}):{}".format(device_identifier, ret))
+            ctrl_connection.send(f"OPEN ({device_identifier}):{ret}")
         else:
             ctrl_connection.send("OPEN:" + str(ret))
 
@@ -88,7 +88,7 @@ class USRP(Device):
         ctrl_connection.send("Initializing stream...")
         usrp.setup_stream()
         ret = usrp.start_stream(0)
-        ctrl_connection.send("Initialize stream:{0}".format(ret))
+        ctrl_connection.send(f"Initialize stream:{ret}")
         return ret
 
     @classmethod

@@ -28,7 +28,7 @@ DEVICES = {
         "api_version_check_code": """
                     #include<stdio.h>
                     #include<libbladeRF.h>
-                    
+
                     int main(void) {
                     struct bladerf_version result; bladerf_version(&result);
                     printf("%f", result.major + result.minor/10.0 + result.patch/100.0);
@@ -63,12 +63,12 @@ def compiler_has_function(
     devnull = old_stderr = None
     try:
         try:
-            file_name = os.path.join(tmp_dir, "{}.c".format(function_name))
+            file_name = os.path.join(tmp_dir, f"{function_name}.c")
             with open(file_name, "w") as f:
                 # declare function in order to prevent Clang 12 error (https://github.com/jopohl/urh/issues/811)
-                f.write("void %s();\n" % function_name)
+                f.write(f"void {function_name}();\n")
                 f.write("int main(void) {\n")
-                f.write("    %s();\n" % function_name)
+                f.write(f"    {function_name}();\n")
                 f.write("}\n")
 
             # Redirect stderr to /dev/null to hide any error messages from the compiler.
@@ -82,7 +82,7 @@ def compiler_has_function(
                 library_dirs=library_dirs,
                 libraries=libraries,
             )
-        except Exception as e:
+        except Exception:
             return False
         return True
     finally:
@@ -121,7 +121,7 @@ def check_api_version(
             print("    Automatic API version check succeeded.")
             return result
         except Exception as e:
-            print("    API version check failed: {}".format(e))
+            print(f"    API version check failed: {e}")
             return 0.0
     finally:
         shutil.rmtree(tmp_dir)
@@ -133,7 +133,7 @@ def get_device_extensions_and_extras(library_dirs=None, include_dirs=None):
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     include_dirs = [] if include_dirs is None else include_dirs
 
-    device_extras = dict()
+    device_extras = {}
 
     if os.path.isdir(os.path.join(cur_dir, "lib/shared")):
         # Device libs are packaged, so we are in release mode
@@ -173,11 +173,11 @@ def get_device_extensions_and_extras(library_dirs=None, include_dirs=None):
     compiler = ccompiler.new_compiler()
     for dev_name, params in DEVICES.items():
         if build_device_extensions[dev_name] == 0:
-            print("Skipping native {0} support".format(dev_name))
+            print(f"Skipping native {dev_name} support")
             continue
 
         if build_device_extensions[dev_name] == 1:
-            print("Enforcing native {0} support".format(dev_name))
+            print(f"Enforcing native {dev_name} support")
         elif compiler_has_function(
             compiler,
             params["test_function"],
@@ -186,12 +186,12 @@ def get_device_extensions_and_extras(library_dirs=None, include_dirs=None):
             include_dirs,
         ):
             print(
-                "Found {0} lib. Will compile with native {1} support".format(
+                "Found {} lib. Will compile with native {} support".format(
                     params["lib"], dev_name
                 )
             )
         else:
-            print("Skipping native support for {0}".format(dev_name))
+            print(f"Skipping native support for {dev_name}")
             continue
 
         device_extras.update(
@@ -206,18 +206,12 @@ def get_device_extensions_and_extras(library_dirs=None, include_dirs=None):
                 try:
                     ver = float(ver)
                 except Exception as e:
-                    print(
-                        "    Could not convert content of {} to float: {}".format(
-                            env_name, e
-                        )
-                    )
+                    print(f"    Could not convert content of {env_name} to float: {e}")
                     print("    Will now try to automatically detect API version.")
                     ver = None
             else:
                 print(
-                    "    Environment variable {} is unset, try to automatically detect API version".format(
-                        env_name
-                    )
+                    f"    Environment variable {env_name} is unset, try to automatically detect API version"
                 )
 
             if ver is None:
@@ -229,7 +223,7 @@ def get_device_extensions_and_extras(library_dirs=None, include_dirs=None):
                     include_dirs,
                 )
             device_extras[env_name] = ver
-            print("    Using {}={}".format(env_name, ver))
+            print(f"    Using {env_name}={ver}")
 
         extension = get_device_extension(
             dev_name, [params["lib"]], library_dirs, include_dirs
@@ -243,9 +237,9 @@ def get_device_extras(compiler, dev_name, libraries, library_dirs, include_dirs)
     try:
         extras = DEVICES[dev_name]["extras"]
     except KeyError:
-        extras = dict()
+        extras = {}
 
-    result = dict()
+    result = {}
 
     for extra, func_name in extras.items():
         if compiler_has_function(
@@ -253,7 +247,7 @@ def get_device_extras(compiler, dev_name, libraries, library_dirs, include_dirs)
         ):
             result[extra] = 1
         else:
-            print("Skipping {} as installed driver does not support it".format(extra))
+            print(f"Skipping {extra} as installed driver does not support it")
             result[extra] = 0
 
     return result
@@ -270,9 +264,9 @@ def get_device_extension(
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     if USE_RELATIVE_PATHS:
         # We need relative paths on windows
-        cpp_file_path = "src/urh/dev/native/lib/{0}.pyx".format(dev_name)
+        cpp_file_path = f"src/urh/dev/native/lib/{dev_name}.pyx"
     else:
-        cpp_file_path = os.path.join(cur_dir, "lib", "{0}.pyx".format(dev_name))
+        cpp_file_path = os.path.join(cur_dir, "lib", f"{dev_name}.pyx")
 
     return Extension(
         "urh.dev.native.lib." + dev_name,

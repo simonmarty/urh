@@ -1,13 +1,11 @@
-import math
-
 import numpy as np
-from PyQt6.QtCore import QObject, QByteArray
-from PyQt6.QtGui import QPen, QColor
+from PyQt6.QtCore import QObject
+from PyQt6.QtGui import QPen
 from PyQt6.QtWidgets import QGraphicsPathItem
 from urh.signalprocessing.IQArray import IQArray
 
 from urh import settings
-from urh.cythonext import path_creator, util
+from urh.cythonext import path_creator
 from urh.ui.painting.ZoomableScene import ZoomableScene
 
 

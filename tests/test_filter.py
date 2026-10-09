@@ -1,10 +1,8 @@
 import unittest
 
 import numpy as np
-import time
 
 from tests.QtTestCase import QtTestCase
-from urh.controller.widgets.SignalFrame import SignalFrame
 from urh.signalprocessing.Filter import Filter
 
 
@@ -13,9 +11,7 @@ class TestFilter(QtTestCase):
         super().setUp()
 
         self.add_signal_to_form("unaveraged.coco")
-        self.sig_frame = self.form.signal_tab_controller.signal_frames[
-            0
-        ]  # type: SignalFrame
+        self.sig_frame = self.form.signal_tab_controller.signal_frames[0]  # type: SignalFrame
 
     def test_fir_filter(self):
         input_signal = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 42], dtype=np.complex64)

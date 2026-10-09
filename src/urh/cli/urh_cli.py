@@ -5,6 +5,7 @@ import os
 import sys
 import time
 from collections import defaultdict
+from typing import Any
 
 import numpy as np
 
@@ -33,7 +34,7 @@ util.set_shared_library_path()
 try:
     import urh.cythonext.signal_functions
     import urh.cythonext.path_creator
-    import urh.cythonext.util
+    import urh.cythonext.util  # noqa: F401
 except ImportError:
     if hasattr(sys, "frozen"):
         print("C++ Extensions not found. Exiting...")
@@ -66,9 +67,7 @@ def cli_progress_bar(value, end_value, bar_length=20, title="Percent"):
     percent = value / end_value
     hashes = "#" * int(round(percent * bar_length))
     spaces = " " * (bar_length - len(hashes))
-    sys.stdout.write(
-        "\r{0}:\t[{1}] {2}%".format(title, hashes + spaces, int(round(percent * 100)))
-    )
+    sys.stdout.write(f"\r{title}:\t[{hashes + spaces}] {int(round(percent * 100))}%")
     sys.stdout.flush()
 
 
@@ -86,9 +85,7 @@ def build_modulator_from_args(arguments: argparse.Namespace):
     n = 2 ** int(arguments.bits_per_symbol)
     if arguments.parameters is None or len(arguments.parameters) != n:
         raise ValueError(
-            "You need to give {} parameters for {} bits per symbol".format(
-                n, int(arguments.bits_per_symbol)
-            )
+            f"You need to give {n} parameters for {int(arguments.bits_per_symbol)} bits per symbol"
         )
 
     result = Modulator("CLI Modulator")
@@ -259,7 +256,7 @@ def modulate_messages(messages, modulator):
         buffer[pos : pos + len(modulated)] = modulated
         pos += len(modulated) + msg.pause
         cli_progress_bar(i + 1, len(messages), title="Modulating")
-    print("\nSuccessfully modulated {} messages".format(len(messages)))
+    print(f"\nSuccessfully modulated {len(messages)} messages")
     return buffer
 
 
@@ -267,7 +264,7 @@ def parse_project_file(file_path: str):
     import xml.etree.ElementTree as ET
     from urh.util.ProjectManager import ProjectManager
 
-    result = defaultdict(lambda: None)
+    result: defaultdict[str, Any] = defaultdict(lambda: None)
     if not file_path or not os.path.isfile(file_path):
         return result
 
@@ -275,7 +272,7 @@ def parse_project_file(file_path: str):
         tree = ET.parse(file_path)
         root = tree.getroot()
     except Exception as e:
-        logger.error("Could not read project file {}: {}".format(file_path, e))
+        logger.error(f"Could not read project file {file_path}: {e}")
         return result
 
     ProjectManager.read_device_conf_dict(root.find("device_conf"), target_dict=result)
@@ -364,21 +361,19 @@ def create_parser():
         "-cf",
         "--carrier-frequency",
         type=float,
-        help="Carrier frequency in Hertz (default: {})".format(
-            DEFAULT_CARRIER_FREQUENCY
-        ),
+        help=f"Carrier frequency in Hertz (default: {DEFAULT_CARRIER_FREQUENCY})",
     )
     group2.add_argument(
         "-ca",
         "--carrier-amplitude",
         type=float,
-        help="Carrier amplitude (default: {})".format(DEFAULT_CARRIER_AMPLITUDE),
+        help=f"Carrier amplitude (default: {DEFAULT_CARRIER_AMPLITUDE})",
     )
     group2.add_argument(
         "-cp",
         "--carrier-phase",
         type=float,
-        help="Carrier phase in degree (default: {})".format(DEFAULT_CARRIER_PHASE),
+        help=f"Carrier phase in degree (default: {DEFAULT_CARRIER_PHASE})",
     )
     group2.add_argument(
         "-mo",
@@ -411,46 +406,42 @@ def create_parser():
         "-sps",
         "--samples-per-symbol",
         type=int,
-        help="Length of a symbol in samples (default: {}).".format(
-            DEFAULT_SAMPLES_PER_SYMBOL
-        ),
+        help=f"Length of a symbol in samples (default: {DEFAULT_SAMPLES_PER_SYMBOL}).",
     )
     group2.add_argument(
         "-bl",
         "--bit-length",
         type=int,
-        help="Same as samples per symbol, just there for legacy support (default: {}).".format(
-            DEFAULT_SAMPLES_PER_SYMBOL
-        ),
+        help=f"Same as samples per symbol, just there for legacy support (default: {DEFAULT_SAMPLES_PER_SYMBOL}).",
     )
 
     group2.add_argument(
         "-n",
         "--noise",
         type=float,
-        help="Noise threshold (default: {}). Used for RX only.".format(DEFAULT_NOISE),
+        help=f"Noise threshold (default: {DEFAULT_NOISE}). Used for RX only.",
     )
     group2.add_argument(
         "-c",
         "--center",
         type=float,
-        help="Center between symbols for demodulation (default: {}). "
-        "Used for RX only.".format(DEFAULT_CENTER),
+        help=f"Center between symbols for demodulation (default: {DEFAULT_CENTER}). "
+        "Used for RX only.",
     )
     group2.add_argument(
         "-cs",
         "--center-spacing",
         type=float,
-        help="Center spacing between symbols for demodulation (default: {}). "
+        help=f"Center spacing between symbols for demodulation (default: {DEFAULT_CENTER_SPACING}). "
         "Value has only effect for modulations with more than 1 bit per symbol. "
-        "Used only for RX.".format(DEFAULT_CENTER_SPACING),
+        "Used only for RX.",
     )
     group2.add_argument(
         "-t",
         "--tolerance",
         type=float,
-        help="Tolerance for demodulation in samples (default: {}). "
-        "Used for RX only.".format(DEFAULT_TOLERANCE),
+        help=f"Tolerance for demodulation in samples (default: {DEFAULT_TOLERANCE}). "
+        "Used for RX only.",
     )
 
     group3 = parser.add_argument_group(
@@ -464,11 +455,11 @@ def create_parser():
         "-m",
         "--messages",
         nargs="+",
-        help="Messages to send. Give pauses after with a {0}. "
+        help=f"Messages to send. Give pauses after with a {PAUSE_SEP}. "
         "Separate with spaces e.g. "
-        "1001{0}42ms 1100{0}3ns 0001 1111{0}200. "
+        f"1001{PAUSE_SEP}42ms 1100{PAUSE_SEP}3ns 0001 1111{PAUSE_SEP}200. "
         "If you give no time suffix after a pause "
-        "it is assumed to be in samples. ".format(PAUSE_SEP),
+        "it is assumed to be in samples. ",
     )
 
     group3.add_argument(
@@ -544,7 +535,7 @@ def main():
         if project_params[argument] is not None:
             setattr(args, argument, project_params[argument])
         else:
-            print("You must specify a {}.".format(argument))
+            print(f"You must specify a {argument}.")
             sys.exit(1)
 
     if args.receive and args.transmit:
@@ -572,7 +563,7 @@ def main():
                 ]
             else:
                 args.modulation_type = project_params["modulation_type"]
-        except:
+        except Exception:
             pass
 
     if args.bit_length is not None and args.samples_per_symbol is None:
@@ -625,9 +616,7 @@ def main():
         logger.setLevel(logging.DEBUG)
     Logger.save_log_level()
 
-    argument_string = "\n".join(
-        "{} {}".format(arg, getattr(args, arg)) for arg in vars(args)
-    )
+    argument_string = "\n".join(f"{arg} {getattr(args, arg)}" for arg in vars(args))
     logger.debug("Using these parameters\n" + argument_string)
 
     if args.transmit:
@@ -678,12 +667,12 @@ def main():
         total_time = 0
 
         if args.receive_time >= 0:
-            print("Receiving for {} seconds...".format(args.receive_time))
+            print(f"Receiving for {args.receive_time} seconds...")
         else:
             print("Receiving forever...")
 
         f = None if args.filename is None else open(args.filename, "w")
-        kwargs = dict() if f is None else {"file": f}
+        kwargs = {} if f is None else {"file": f}
 
         dev = receiver.rcv_device if hasattr(receiver, "rcv_device") else receiver
 
@@ -700,7 +689,7 @@ def main():
                     for msg in receiver.messages[:num_messages]:
                         print(
                             msg.decoded_hex_str if args.hex else msg.decoded_bits_str,
-                            **kwargs
+                            **kwargs,
                         )
                     del receiver.messages[:num_messages]
             except KeyboardInterrupt:
@@ -715,7 +704,7 @@ def main():
 
         if f is not None:
             f.close()
-            print("Received data written to {}".format(args.filename))
+            print(f"Received data written to {args.filename}")
 
 
 if __name__ == "__main__":

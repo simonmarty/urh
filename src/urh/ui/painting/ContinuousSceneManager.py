@@ -1,4 +1,3 @@
-from urh.signalprocessing.IQArray import IQArray
 from urh.ui.painting.SceneManager import SceneManager
 from urh.util.RingBuffer import RingBuffer
 

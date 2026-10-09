@@ -2,7 +2,6 @@ import copy
 import math
 from collections import defaultdict
 
-import numpy as np
 from urh.util.WSPChecksum import WSPChecksum
 
 from urh.awre.CommonRange import ChecksumRange
@@ -34,7 +33,7 @@ class ChecksumEngine(Engine):
             }
 
     def find(self):
-        result = list()
+        result = []
         bitvectors_by_n_gram_length = defaultdict(list)
         for i, bitvector in enumerate(self.bitvectors):
             bin_num = int(math.ceil(len(bitvector) / self.n_gram_length))
@@ -111,7 +110,7 @@ class ChecksumEngine(Engine):
                         data_stop,
                         crc_start,
                         crc_stop,
-                        *crc_object.get_parameters()
+                        *crc_object.get_parameters(),
                     )
 
                     checksum_range.message_indices.update(matching)
@@ -129,8 +128,9 @@ class ChecksumEngine(Engine):
         try:
             max_scored = max(
                 filter(
-                    lambda x: len(x.message_indices) >= 2
-                    and x.score >= self.minimum_score,
+                    lambda x: (
+                        len(x.message_indices) >= 2 and x.score >= self.minimum_score
+                    ),
                     result,
                 ),
                 key=lambda x: x.score,

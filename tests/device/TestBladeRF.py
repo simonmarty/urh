@@ -1,10 +1,8 @@
-import time
 from multiprocessing.connection import Pipe
 
 import numpy as np
 import unittest
 
-from urh.dev.native.BladeRF import BladeRF
 from urh.util import util
 
 util.set_shared_library_path()

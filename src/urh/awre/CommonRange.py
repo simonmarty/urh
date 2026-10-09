@@ -7,7 +7,7 @@ from urh.util import util
 from urh.util.GenericCRC import GenericCRC
 
 
-class CommonRange(object):
+class CommonRange:
     def __init__(
         self,
         start,
@@ -32,7 +32,7 @@ class CommonRange(object):
         self.sync_end = 0
 
         if isinstance(value, str):
-            value = np.array(list(map(lambda x: int(x, 16), value)), dtype=np.uint8)
+            value = np.array([int(x, 16) for x in value], dtype=np.uint8)
 
         self.values = [value] if value is not None else []
         self.score = score
@@ -115,12 +115,10 @@ class CommonRange(object):
         elif self.range_type == "byte":
             return n * 8
         else:
-            raise ValueError("Unknown range type {}".format(self.range_type))
+            raise ValueError(f"Unknown range type {self.range_type}")
 
     def __repr__(self):
-        result = "{} {}-{} ({} {})".format(
-            self.field_type, self.bit_start, self.bit_end, self.length, self.range_type
-        )
+        result = f"{self.field_type} {self.bit_start}-{self.bit_end} ({self.length} {self.range_type})"
 
         result += " Values: " + " ".join(
             map(util.convert_numbers_to_hex_string, self.values)
@@ -256,8 +254,8 @@ class ChecksumRange(CommonRange):
         return (
             super().__repr__()
             + " \t"
-            + "{}".format(self.crc.caption)
-            + " Datarange: {}-{} ".format(self.data_range_start, self.data_range_end)
+            + f"{self.crc.caption}"
+            + f" Datarange: {self.data_range_start}-{self.data_range_end} "
         )
 
 
@@ -282,7 +280,7 @@ class EmptyCommonRange(CommonRange):
         return hash(super)
 
 
-class CommonRangeContainer(object):
+class CommonRangeContainer:
     """
     This is the raw equivalent of a Message Type:
     A container of common ranges

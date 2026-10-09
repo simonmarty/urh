@@ -6,7 +6,6 @@ from PyQt6.QtCore import QDir, QPoint, Qt
 from PyQt6.QtTest import QTest
 
 from tests.QtTestCase import QtTestCase
-from urh.controller.GeneratorTabController import GeneratorTabController
 from urh.controller.MainController import MainController
 
 
@@ -196,9 +195,7 @@ class TestGenerator(QtTestCase):
         self.form.generator_tab_controller.ui.tableMessages.context_menu_pos = QPoint(
             0, 0
         )
-        menu = (
-            self.form.generator_tab_controller.ui.listViewProtoLabels.create_context_menu()
-        )
+        menu = self.form.generator_tab_controller.ui.listViewProtoLabels.create_context_menu()
         self.assertEqual(len(menu.actions()), 0)
 
         # Add data to test entries in context menu
@@ -219,9 +216,7 @@ class TestGenerator(QtTestCase):
         self.assertGreater(self.form.generator_tab_controller.table_model.rowCount(), 0)
         # Select a row so there is a message for that fuzzing labels can be shown
         self.form.generator_tab_controller.ui.tableMessages.selectRow(0)
-        menu = (
-            self.form.generator_tab_controller.ui.listViewProtoLabels.create_context_menu()
-        )
+        menu = self.form.generator_tab_controller.ui.listViewProtoLabels.create_context_menu()
         n_items = len(menu.actions())
         self.assertGreater(n_items, 0)
 

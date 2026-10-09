@@ -13,7 +13,6 @@ from urh.controller.MainController import MainController
 from urh.signalprocessing.ProtocolSniffer import ProtocolSniffer
 
 # noinspection PyUnresolvedReferences
-import urh.ui.urh_rc
 
 faulthandler.enable()
 

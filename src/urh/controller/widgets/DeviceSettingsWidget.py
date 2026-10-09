@@ -3,7 +3,7 @@ from statistics import median
 import numpy as np
 from PyQt6.QtCore import QRegularExpression, pyqtSlot, pyqtSignal
 from PyQt6.QtGui import QRegularExpressionValidator, QIcon
-from PyQt6.QtWidgets import QWidget, QSpinBox, QLabel, QComboBox, QSlider
+from PyQt6.QtWidgets import QWidget
 
 from urh import settings
 from urh.dev import config

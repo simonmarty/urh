@@ -10,7 +10,7 @@ from PyQt6.QtCore import (
     QRegularExpression,
 )
 from PyQt6.QtGui import QRegularExpressionValidator
-from PyQt6.QtWidgets import QWidget, QHeaderView, QAbstractItemView, QLineEdit
+from PyQt6.QtWidgets import QWidget, QHeaderView, QAbstractItemView
 
 from urh.signalprocessing.ChecksumLabel import ChecksumLabel
 from urh.signalprocessing.Message import Message
@@ -161,12 +161,8 @@ class ChecksumWidget(QWidget):
             QAbstractItemView.EditTrigger.AllEditTriggers
         )
         self.display_crc_data_ranges_in_table()
-        self.ui.comboBoxCRCFunction.addItems(
-            [crc_name for crc_name in GenericCRC.DEFAULT_POLYNOMIALS]
-        )
-        self.ui.comboBoxCRCFunction.addItems(
-            [special_crc_name for special_crc_name in self.SPECIAL_CRCS]
-        )
+        self.ui.comboBoxCRCFunction.addItems(list(GenericCRC.DEFAULT_POLYNOMIALS))
+        self.ui.comboBoxCRCFunction.addItems(list(self.SPECIAL_CRCS))
         self.ui.lineEditCRCPolynomial.setValidator(
             QRegularExpressionValidator(QRegularExpression("[0-9,a-f]*"))
         )
@@ -295,16 +291,11 @@ class ChecksumWidget(QWidget):
         crc = self.checksum_label.checksum  # type: GenericCRC
         self.ui.label_crc_info.setText(
             "<b>CRC Summary:</b><ul>"
-            "<li>Polynomial = {}<>"
-            "<li>Length of checksum = {} bit</li>"
-            "<li>start value length = {} bit</li>"
-            "<li>final XOR length = {} bit</li>"
-            "</ul>".format(
-                crc.polynomial_to_html,
-                crc.poly_order - 1,
-                len(crc.start_value),
-                len(crc.final_xor),
-            )
+            f"<li>Polynomial = {crc.polynomial_to_html}<>"
+            f"<li>Length of checksum = {crc.poly_order - 1} bit</li>"
+            f"<li>start value length = {len(crc.start_value)} bit</li>"
+            f"<li>final XOR length = {len(crc.final_xor)} bit</li>"
+            "</ul>"
         )
 
     def __ensure_same_length(self):

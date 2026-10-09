@@ -36,14 +36,14 @@ if __name__ == "__main__":
         cmd.append("--onefile")
 
     for hidden_import in HIDDEN_IMPORTS:
-        cmd.append("--hidden-import={}".format(hidden_import))
+        cmd.append(f"--hidden-import={hidden_import}")
 
     for src, dst in DATA:
         cmd.append("--add-data")
-        cmd.append('"{}{}{}"'.format(src, os.pathsep, dst))
+        cmd.append(f'"{src}{os.pathsep}{dst}"')
 
     for exclude in EXCLUDE:
-        cmd.append("--exclude-module={}".format(exclude))
+        cmd.append(f"--exclude-module={exclude}")
 
     urh_path = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -91,9 +91,9 @@ if __name__ == "__main__":
             p = plistlib.load(f)
         p["NSHighResolutionCapable"] = True
         p["NSRequiresAquaSystemAppearance"] = True
-        p[
-            "NSMicrophoneUsageDescription"
-        ] = "URH needs access to your microphone to capture signals via Soundcard."
+        p["NSMicrophoneUsageDescription"] = (
+            "URH needs access to your microphone to capture signals via Soundcard."
+        )
         with open("pyinstaller/urh.app/Contents/Info.plist", "wb") as f:
             plistlib.dump(p, f)
 

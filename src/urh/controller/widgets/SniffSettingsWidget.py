@@ -198,18 +198,18 @@ class SniffSettingsWidget(QWidget):
 
     def emit_sniff_parameters_changed(self):
         self.sniff_parameters_changed.emit(
-            dict(
-                samples_per_symbol=self.sniffer.signal.samples_per_symbol,
-                center=self.sniffer.signal.center,
-                center_spacing=self.sniffer.signal.center_spacing,
-                noise=self.sniffer.signal.noise_threshold,
-                tolerance=self.sniffer.signal.tolerance,
-                modulation_type=self.sniffer.signal.modulation_type,
-                bits_per_symbol=self.sniffer.signal.bits_per_symbol,
-                decoding_name=self.sniffer.decoder.name,
-                adaptive_noise=self.sniffer.adaptive_noise,
-                automatic_center=self.sniffer.automatic_center,
-            )
+            {
+                "samples_per_symbol": self.sniffer.signal.samples_per_symbol,
+                "center": self.sniffer.signal.center,
+                "center_spacing": self.sniffer.signal.center_spacing,
+                "noise": self.sniffer.signal.noise_threshold,
+                "tolerance": self.sniffer.signal.tolerance,
+                "modulation_type": self.sniffer.signal.modulation_type,
+                "bits_per_symbol": self.sniffer.signal.bits_per_symbol,
+                "decoding_name": self.sniffer.decoder.name,
+                "adaptive_noise": self.sniffer.adaptive_noise,
+                "automatic_center": self.sniffer.automatic_center,
+            }
         )
 
     @pyqtSlot()
@@ -274,7 +274,7 @@ class SniffSettingsWidget(QWidget):
         if text and not os.path.isfile(text):
             try:
                 open(text, "w").close()
-            except Exception as e:
+            except Exception:
                 self.ui.lineEdit_sniff_OutputFile.setStyleSheet("color:red;")
                 return
 

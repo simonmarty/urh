@@ -110,12 +110,10 @@ class ReceiveDialog(SendRecvDialog):
         timestamp_str = datetime.fromtimestamp(dev.data_timestamp).strftime(
             "%Y%m%d_%H%M%S"
         )
-        initial_name = "{0}-{1}-{2}Hz-{3}Sps".format(
-            dev.name, timestamp_str, big_val(dev.frequency), big_val(dev.sample_rate)
-        )
+        initial_name = f"{dev.name}-{timestamp_str}-{big_val(dev.frequency)}Hz-{big_val(dev.sample_rate)}Sps"
 
         if dev.bandwidth_is_adjustable:
-            initial_name += "-{}Hz".format(big_val(dev.bandwidth))
+            initial_name += f"-{big_val(dev.bandwidth)}Hz"
 
         initial_name = initial_name.replace(
             Formatter.local_decimal_seperator(), "_"

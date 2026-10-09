@@ -56,9 +56,7 @@ def run_for_num_broken(
 
         result.append((avg_accuracy, avg_accuracy_without_broken))
         print(
-            "Protocol {} with {} broken: {:>3}% {:>3}%".format(
-                protocol_nr, broken, int(avg_accuracy), int(avg_accuracy_without_broken)
-            )
+            f"Protocol {protocol_nr} with {broken} broken: {int(avg_accuracy):>3}% {int(avg_accuracy_without_broken):>3}%"
         )
 
     return result
@@ -399,13 +397,13 @@ class AWRExperiments(AWRETestCase):
 
         if num_broken_messages == 0:
             cls.save_protocol(
-                "protocol{}_{}_messages".format(protocol_number, num_messages),
+                f"protocol{protocol_number}_{num_messages}_messages",
                 pg,
                 silent=silent,
             )
         else:
             cls.save_protocol(
-                "protocol{}_{}_broken".format(protocol_number, num_broken_messages),
+                f"protocol{protocol_number}_{num_broken_messages}_broken",
                 pg,
                 silent=silent,
             )
@@ -462,7 +460,7 @@ class AWRExperiments(AWRETestCase):
                 self.run_format_finder_for_protocol(protocol)
 
                 accuracy = self.calculate_accuracy(protocol.messages, expected_labels)
-                accuracies["protocol {}".format(protocol_nr)].append(accuracy)
+                accuracies[f"protocol {protocol_nr}"].append(accuracy)
 
         self.__plot(
             num_messages,
@@ -480,7 +478,7 @@ class AWRExperiments(AWRETestCase):
         num_runs = 100
 
         num_messages = 30
-        num_broken_messages = list(range(0, num_messages + 1))
+        num_broken_messages = list(range(num_messages + 1))
         accuracies = defaultdict(list)
         accuracies_without_broken = defaultdict(list)
 
@@ -495,10 +493,8 @@ class AWRExperiments(AWRETestCase):
                 [(i, num_broken_messages, num_messages, num_runs) for i in protocols],
             )
             for i, acc in enumerate(result):
-                accuracies["protocol {}".format(i + 1)] = [a[0] for a in acc]
-                accuracies_without_broken["protocol {}".format(i + 1)] = [
-                    a[1] for a in acc
-                ]
+                accuracies[f"protocol {i + 1}"] = [a[0] for a in acc]
+                accuracies_without_broken[f"protocol {i + 1}"] = [a[1] for a in acc]
 
         self.__plot(
             100 * np.array(num_broken_messages) / num_messages,
@@ -548,7 +544,7 @@ class AWRExperiments(AWRETestCase):
 
                 t = time.time()
                 self.run_format_finder_for_protocol(protocol)
-                performances["protocol {}".format(protocol_nr)].append(time.time() - t)
+                performances[f"protocol {protocol_nr}"].append(time.time() - t)
 
         # self.__plot(num_messages, performances, xlabel="Number of messages", ylabel="Time in seconds", grid=True)
 
@@ -580,9 +576,7 @@ class AWRExperiments(AWRETestCase):
                 tmp_performances = np.empty(num_runs, dtype=np.float64)
                 for i in range(num_runs):
                     print(
-                        "\r{0} with {1:02d} messages ({2}/{3} runs)".format(
-                            protocol_name, messages, i + 1, num_runs
-                        ),
+                        f"\r{protocol_name} with {messages:02d} messages ({i + 1}/{num_runs} runs)",
                         flush=True,
                         end="",
                     )
@@ -593,8 +587,8 @@ class AWRExperiments(AWRETestCase):
                     self.clear_message_types(protocol.messages)
 
                 mean_performance = tmp_performances.mean()
-                print(" {:.2f}s".format(mean_performance))
-                performances["{}".format(protocol_name)].append(mean_performance)
+                print(f" {mean_performance:.2f}s")
+                performances[f"{protocol_name}"].append(mean_performance)
 
         self.__plot(
             num_messages,
@@ -619,12 +613,12 @@ class AWRExperiments(AWRETestCase):
             f.write("\n")
 
             for i, x_val in enumerate(x):
-                f.write("{},".format(x_val))
+                f.write(f"{x_val},")
                 if relative is not None:
-                    f.write("{},".format(100 * x_val / relative))
+                    f.write(f"{100 * x_val / relative},")
 
                 for y_cap in sorted(y):
-                    f.write("{},".format(y[y_cap][i]))
+                    f.write(f"{y[y_cap][i]},")
                 f.write("\n")
 
     @staticmethod
@@ -701,9 +695,9 @@ class AWRExperiments(AWRETestCase):
         pg = ProtocolGenerator(
             message_types,
             participants,
-            preambles_by_mt={mt: preamble for mt in message_types},
-            syncs_by_mt={mt: sync for mt in message_types},
-            sequence_numbers={mt: initial_sequence_number for mt in message_types},
+            preambles_by_mt=dict.fromkeys(message_types, preamble),
+            syncs_by_mt=dict.fromkeys(message_types, sync),
+            sequence_numbers=dict.fromkeys(message_types, initial_sequence_number),
             message_type_codes={
                 mb_m_frame.message_type: 42560,
                 mb_c_frame.message_type: 40962,
@@ -733,7 +727,7 @@ class AWRExperiments(AWRETestCase):
     def generate_enocean(cls, num_messages: int, save_protocol=True):
         filename = get_path_for_data_file("enocean_bits.txt")
         enocean_bits = []
-        with open(filename, "r") as f:
+        with open(filename) as f:
             for line in map(str.strip, f):
                 enocean_bits.append(line)
 
@@ -908,9 +902,9 @@ class AWRExperiments(AWRETestCase):
                     data_lbl = mt.get_first_label_with_type(FieldType.Function.DATA)
 
                     if mt.name == "data1" or mt.name == "data2":
-                        f.write("{}/{} byte &".format(data1_len, data2_len))
+                        f.write(f"{data1_len}/{data2_len} byte &")
                     elif mt.name == "data" and data_lbl is None:
-                        f.write("{}/{} byte &".format(data1_len, data2_len))
+                        f.write(f"{data1_len}/{data2_len} byte &")
                     elif data_lbl is not None:
                         f.write("{0}/{0} byte & ".format(data_lbl.length // 8))
                     else:

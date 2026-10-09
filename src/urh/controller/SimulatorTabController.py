@@ -327,9 +327,9 @@ class SimulatorTabController(QWidget):
             self.update_vertical_table_header()
 
     def refresh_message_table(self):
-        self.simulator_message_table_model.protocol.messages[
-            :
-        ] = self.simulator_config.get_all_messages()
+        self.simulator_message_table_model.protocol.messages[:] = (
+            self.simulator_config.get_all_messages()
+        )
         self.simulator_message_table_model.update()
 
         if isinstance(self.active_item, SimulatorMessage):
@@ -718,9 +718,7 @@ class SimulatorTabController(QWidget):
     @pyqtSlot(int, int)
     def on_table_item_link_clicked(self, row: int, column: int):
         try:
-            lbl = self.simulator_message_field_model.message_type[
-                row
-            ]  # type: SimulatorProtocolLabel
+            lbl = self.simulator_message_field_model.message_type[row]  # type: SimulatorProtocolLabel
             assert lbl.is_checksum_label
             assert isinstance(self.active_item, SimulatorMessage)
         except (IndexError, AssertionError):

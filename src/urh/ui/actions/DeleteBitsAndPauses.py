@@ -20,9 +20,7 @@ class DeleteBitsAndPauses(QUndoCommand):
     ):
         super().__init__()
 
-        self.sub_protocols = (
-            [] if subprotos is None else subprotos
-        )  # type: list[ProtocolAnalyzer]
+        self.sub_protocols = [] if subprotos is None else subprotos  # type: list[ProtocolAnalyzer]
         self.view = view
         self.end = end
         self.start = start

@@ -98,12 +98,7 @@ class TestDecoding(unittest.TestCase):
             + "01100001 00000000 00000010 11000001 11000000 00100100"
             + eof
         )
-        expected_result2 = (
-            preamble
-            + sof
-            + "01010000 00000000 00000010 11000001 11000000 00100010"
-            + eof
-        )
+        (preamble + sof + "01010000 00000000 00000010 11000001 11000000 00100010" + eof)
 
         decoded, err, _ = e.code_enocean(True, e.str2bit(received.replace(" ", "")))
         self.assertEqual(err, 0)
@@ -135,7 +130,7 @@ class TestDecoding(unittest.TestCase):
         self.assertEqual(decoded, redecoded)
 
     def test_enocean_crc_polynomial(self):
-        e = Encoding()
+        Encoding()
 
         msg1 = "aa9a6d201006401009802019e411e8035b"
         msg2 = "aa9a6d2010000ffdaaf01019e411e8071b"
@@ -197,8 +192,8 @@ class TestDecoding(unittest.TestCase):
         encoder = get_path_for_data_file("encode.py")
         decoder = get_path_for_data_file("decode.py")
 
-        encoder = '{} "{}"'.format(sys.executable, encoder)
-        decoder = '{} "{}"'.format(sys.executable, decoder)
+        encoder = f'{sys.executable} "{encoder}"'
+        decoder = f'{sys.executable} "{decoder}"'
 
         e = Encoding(
             ["test external", settings.DECODING_EXTERNAL, decoder + ";" + encoder]
@@ -226,12 +221,8 @@ class TestDecoding(unittest.TestCase):
         shutil.copy(encoder, encoder_in_dir_with_spaces)
         shutil.copy(decoder, decoder_in_dir_with_spaces)
 
-        encoder_in_dir_with_spaces = '{} "{}"'.format(
-            sys.executable, encoder_in_dir_with_spaces
-        )
-        decoder_in_dir_with_spaces = '{} "{}"'.format(
-            sys.executable, decoder_in_dir_with_spaces
-        )
+        encoder_in_dir_with_spaces = f'{sys.executable} "{encoder_in_dir_with_spaces}"'
+        decoder_in_dir_with_spaces = f'{sys.executable} "{decoder_in_dir_with_spaces}"'
 
         e = Encoding(
             [
@@ -266,9 +257,7 @@ class TestDecoding(unittest.TestCase):
         shutil.copy(encoder, encoder_in_dir_with_spaces)
         shutil.copy(decoder, decoder_in_dir_with_spaces)
 
-        coder_in_dir_with_spaces = '{} "{}"'.format(
-            sys.executable, coder_in_dir_with_spaces
-        )
+        coder_in_dir_with_spaces = f'{sys.executable} "{coder_in_dir_with_spaces}"'
 
         e = Encoding(
             [
@@ -305,9 +294,7 @@ class TestDecoding(unittest.TestCase):
         shutil.copy(encoder, encoder_in_dir_with_spaces)
         shutil.copy(decoder, decoder_in_dir_with_spaces)
 
-        coder_in_dir_with_spaces = '{} "{}"'.format(
-            sys.executable, coder_in_dir_with_spaces
-        )
+        coder_in_dir_with_spaces = f'{sys.executable} "{coder_in_dir_with_spaces}"'
 
         e = Encoding(
             [

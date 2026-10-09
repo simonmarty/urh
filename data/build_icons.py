@@ -23,7 +23,7 @@ def get_python_files():
 def get_used_icon_names():
     icons = set()
     for sourcefile in get_python_files():
-        with open(sourcefile, "r") as f:
+        with open(sourcefile) as f:
             for line in f:
                 if "QIcon.fromTheme" in line:
                     icon = line[line.find("QIcon.fromTheme") :]

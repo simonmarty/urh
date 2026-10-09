@@ -96,9 +96,9 @@ class LengthEngine(Engine):
         else:
             window_lengths = [n_gram_length * i for i in range(1, 5)]
 
-        scored_ranges = dict()
+        scored_ranges = {}
         for length in common_ranges_by_length:
-            scored_ranges[length] = dict()
+            scored_ranges[length] = {}
             for window_length in window_lengths:
                 scored_ranges[length][window_length] = []
 
@@ -165,9 +165,9 @@ class LengthEngine(Engine):
                 possible_window_lengths, key=lambda x: (possible_window_lengths[x], x)
             )
         except ValueError:
-            return dict()
+            return {}
 
-        high_scores_by_length = dict()
+        high_scores_by_length = {}
 
         # Choose all ranges with highest score per cluster if score surpasses the minimum score
         for length, ranges_by_window_length in scored_ranges.items():

@@ -102,7 +102,7 @@ def create_pcapng_file(
     idb_bytes = _build_pcapng_idb(link_type)
 
     if os.path.isfile(filename):
-        logger.warning("{0} already exists. Overwriting it".format(filename))
+        logger.warning(f"{filename} already exists. Overwriting it")
 
     with open(filename, "wb") as f:
         f.write(shb_bytes)

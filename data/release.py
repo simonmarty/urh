@@ -2,7 +2,6 @@ import fileinput
 import os
 import shutil
 import sys
-import tempfile
 from subprocess import call, check_output
 
 
@@ -43,8 +42,6 @@ def release():
         print("You can only release from master!")
         sys.exit(1)
 
-    open(os.path.join(tempfile.gettempdir(), "urh_releasing"), "w").close()
-
     from src.urh import version
 
     version_file = os.path.realpath(
@@ -58,7 +55,7 @@ def release():
 
     for line in fileinput.input(version_file, inplace=True):
         if line.startswith("VERSION"):
-            line = 'VERSION = "{0}"\n'.format(cur_version)
+            line = f'VERSION = "{cur_version}"\n'
         print(line, end="")
 
     # Publish new version number
@@ -80,8 +77,6 @@ def release():
         ["git", "push", "origin", "--tags"]
     )  # Creates tar package on https://github.com/jopohl/urh/tarball/va.b.c.d
 
-    os.remove(os.path.join(tempfile.gettempdir(), "urh_releasing"))
-
     # region Build docker image and push to DockerHub
     os.chdir(os.path.dirname(__file__))
     call(["docker", "login"])
@@ -93,12 +88,12 @@ def release():
             "--tag",
             "jopohl/urh:latest",
             "--tag",
-            "jopohl/urh:{}".format(cur_version),
+            f"jopohl/urh:{cur_version}",
             ".",
         ]
     )
     call(["docker", "push", "jopohl/urh:latest"])
-    call(["docker", "push", "jopohl/urh:{}".format(cur_version)])
+    call(["docker", "push", f"jopohl/urh:{cur_version}"])
     # endregion
 
 

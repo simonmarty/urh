@@ -11,12 +11,11 @@ from PyQt6.QtGui import QPalette, QIcon, QColor
 from PyQt6.QtWidgets import QApplication, QWidget, QStyleFactory
 
 # noinspection PyUnresolvedReferences
-import urh.ui.urh_rc
 
 try:
     locale.setlocale(locale.LC_ALL, "")
 except locale.Error as e:
-    print("Ignoring locale error {}".format(e))
+    print(f"Ignoring locale error {e}")
 
 GENERATE_UI = True
 
@@ -32,9 +31,9 @@ def fix_windows_stdout_stderr():
         try:
             sys.stdout.write("\n")
             sys.stdout.flush()
-        except:
+        except Exception:
 
-            class DummyStream(object):
+            class DummyStream:
                 def __init__(self):
                     pass
 
@@ -65,8 +64,8 @@ def fix_windows_stdout_stderr():
 def main():
     fix_windows_stdout_stderr()
 
-    if sys.version_info < (3, 9):
-        print("You need at least Python 3.9 for this application!")
+    if sys.version_info < (3, 10):  # noqa: UP036
+        print("You need at least Python 3.10 for this application!")
         sys.exit(1)
 
     urh_exe = sys.executable if hasattr(sys, "frozen") else sys.argv[0]

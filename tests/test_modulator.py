@@ -31,7 +31,7 @@ class TestModulator(unittest.TestCase):
         for modulation in modulations:
             modulator = Modulator(modulation)
             tmp_dir = QDir.tempPath()
-            filename = "{0}_mod.complex".format(modulation)
+            filename = f"{modulation}_mod.complex"
             filename = os.path.join(tmp_dir, filename)
             modulator.modulation_type = modulation
             modulator.samples_per_symbol = self.samples_per_symbol
@@ -95,14 +95,14 @@ class TestModulator(unittest.TestCase):
     def test_c_modulation_method_ask(self):
         bits = array.array("B", [1, 0, 1, 0, 1, 1, 0, 0, 0, 1])
         parameters = array.array("f", [0, 0.25, 0.5, 1])
-        result = modulate_c(bits, 100, "ASK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
+        modulate_c(bits, 100, "ASK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
 
         # result.tofile("/tmp/test.complex")
 
     def test_c_modulation_method_fsk(self):
         bits = array.array("B", [1, 0, 1, 0, 1, 1, 0, 0, 0, 1])
         parameters = array.array("f", [-20e3, -10e3, 10e3, 20e3])
-        result = modulate_c(bits, 100, "FSK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
+        modulate_c(bits, 100, "FSK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
 
         # result.tofile("/tmp/test_4fsk.complex")
 
@@ -111,7 +111,7 @@ class TestModulator(unittest.TestCase):
         parameters = array.array(
             "f", [np.pi / 4, 3 * np.pi / 4, 5 * np.pi / 4, 7 * np.pi / 4]
         )
-        result = modulate_c(bits, 100, "PSK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
+        modulate_c(bits, 100, "PSK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
 
         # result.tofile("/tmp/test_psk.complex")
 
@@ -147,13 +147,13 @@ class TestModulator(unittest.TestCase):
         parameters = array.array(
             "f", [np.pi / 4, 3 * np.pi / 4, 5 * np.pi / 4, 7 * np.pi / 4]
         )
-        result = modulate_c(bits, 100, "OQPSK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
+        modulate_c(bits, 100, "OQPSK", parameters, 2, 1, 40e3, 0, 1e6, 1000, 0)
 
         # result.tofile("/tmp/test_oqpsk.complex")
 
     def test_c_modulation_method_gfsk(self):
         bits = array.array("B", [1, 0, 1, 0, 1, 1, 0, 0, 0, 1])
         parameters = array.array("f", [-10e3, 10e3])
-        result = modulate_c(bits, 100, "GFSK", parameters, 1, 1, 40e3, 0, 1e6, 1000, 0)
+        modulate_c(bits, 100, "GFSK", parameters, 1, 1, 40e3, 0, 1e6, 1000, 0)
 
         # result.tofile("/tmp/test_gfsk.complex")

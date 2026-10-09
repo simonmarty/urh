@@ -19,13 +19,11 @@ from urh.awre.engines.SequenceNumberEngine import SequenceNumberEngine
 from urh.cythonext import awre_util
 from urh.signalprocessing.ChecksumLabel import ChecksumLabel
 from urh.signalprocessing.FieldType import FieldType
-from urh.signalprocessing.Message import Message
 from urh.signalprocessing.MessageType import MessageType
-from urh.signalprocessing.ProtocoLabel import ProtocolLabel
 from urh.util.WSPChecksum import WSPChecksum
 
 
-class FormatFinder(object):
+class FormatFinder:
     MIN_MESSAGES_PER_CLUSTER = 2
 
     def __init__(self, messages, participants=None, shortest_field_length=None):
@@ -84,10 +82,8 @@ class FormatFinder(object):
         self.hexvectors = self.get_hexvectors(self.bitvectors)
         self.current_iteration = 0
 
-        participants = list(
-            sorted(
-                set(msg.participant for msg in messages if msg.participant is not None)
-            )
+        participants = sorted(
+            {msg.participant for msg in messages if msg.participant is not None}
         )
         self.participant_indices = [
             participants.index(msg.participant) if msg.participant is not None else -1
@@ -249,8 +245,8 @@ class FormatFinder(object):
                     new_message_type = copy.deepcopy(message_type)  # type: MessageType
 
                     if i > 0:
-                        new_message_type.name = "Message Type {}.{}".format(
-                            self.current_iteration + 1, i
+                        new_message_type.name = (
+                            f"Message Type {self.current_iteration + 1}.{i}"
                         )
                         new_message_type.give_new_id()
 
@@ -269,9 +265,9 @@ class FormatFinder(object):
             self.current_iteration += 1
 
         if len(self.message_types) > 0:
-            messages_without_message_type = set(range(len(self.bitvectors))) - set(
+            messages_without_message_type = set(range(len(self.bitvectors))) - {
                 i for l in self.existing_message_types.values() for i in l
-            )
+            }
 
             # add to default message type
             self.existing_message_types[self.message_types[0]].extend(
@@ -377,7 +373,7 @@ class FormatFinder(object):
         """
         if num_messages is None:
             message_indices = sorted(
-                set(i for rng in label_set for i in rng.message_indices)
+                {i for rng in label_set for i in rng.message_indices}
             )
         else:
             message_indices = range(num_messages)
@@ -385,12 +381,12 @@ class FormatFinder(object):
         result = []
         for i in message_indices:
             labels = sorted(
-                set(
+                {
                     rng
                     for rng in label_set
                     if i in rng.message_indices
                     and not isinstance(rng, EmptyCommonRange)
-                )
+                }
             )
 
             container = next(

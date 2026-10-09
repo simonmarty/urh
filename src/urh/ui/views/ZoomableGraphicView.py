@@ -75,9 +75,7 @@ class ZoomableGraphicView(SelectableGraphicView):
             else:
                 return -self.signal.center
         except Exception as e:
-            logger.error(
-                "Could not access y_center property: {0}. Falling back to 0".format(e)
-            )
+            logger.error(f"Could not access y_center property: {e}. Falling back to 0")
             return 0
 
     def create_context_menu(self):

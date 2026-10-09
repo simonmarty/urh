@@ -14,7 +14,6 @@ from urh.signalprocessing.Message import Message
 from urh.signalprocessing.MessageType import MessageType
 from urh.signalprocessing.Modulator import Modulator
 from urh.signalprocessing.Participant import Participant
-from urh.signalprocessing.ProtocoLabel import ProtocolLabel
 from urh.signalprocessing.Signal import Signal
 from urh.util import util as urh_util, util
 from urh.util.Logger import logger
@@ -33,7 +32,7 @@ class ProtocolAnalyzerSignals(QObject):
         super().__init__(parent)
 
 
-class ProtocolAnalyzer(object):
+class ProtocolAnalyzer:
     """
     The ProtocolAnalyzer is what you would refer to as "protocol".
     The data is stored in the messages variable.
@@ -200,9 +199,7 @@ class ProtocolAnalyzer(object):
                     if (red * 0.299 + green * 0.587 + blue * 0.114) > 186
                     else "#ffffff"
                 )
-                cur_str += '<span style="background-color: rgb({0},{1},{2}); color: {3}">'.format(
-                    red, green, blue, fgcolor
-                )
+                cur_str += f'<span style="background-color: rgb({red},{green},{blue}); color: {fgcolor}">'
 
                 # cur_str += '<span style="color: rgb({0},{1},{2})">'.format(red, green, blue)
 
@@ -584,7 +581,7 @@ class ProtocolAnalyzer(object):
         elif view_type == 2:
             bit_pattern = "".join(map(str, urh_util.ascii2bit(pattern)))
         else:
-            raise ValueError("Unknown view type {}".format(view_type))
+            raise ValueError(f"Unknown view type {view_type}")
 
         indices = [
             msg.decoded_bits_str.find(bit_pattern)
@@ -638,7 +635,7 @@ class ProtocolAnalyzer(object):
         self._protocol_labels = val
 
     def add_new_message_type(self, labels):
-        names = set(message_type.name for message_type in self.message_types)
+        names = {message_type.name for message_type in self.message_types}
         name = "Message type #"
         i = 0
         while True:
@@ -661,7 +658,7 @@ class ProtocolAnalyzer(object):
 
     def from_binary(self, filename: str):
         aggregated = np.fromfile(filename, dtype=np.uint8)
-        unaggregated = [int(b) for n in aggregated for b in "{0:08b}".format(n)]
+        unaggregated = [int(b) for n in aggregated for b in f"{n:08b}"]
         self.messages.append(Message(unaggregated, 0, self.default_message_type))
 
     def to_xml_tag(
@@ -886,11 +883,11 @@ class ProtocolAnalyzer(object):
 
         if is_hex:
             protocol.messages.clear()
-            lookup = {"{0:0x}".format(i): "{0:04b}".format(i) for i in range(16)}
+            lookup = {f"{i:0x}": f"{i:04b}" for i in range(16)}
 
             for line in filter(None, map(str.strip, message_strings)):
                 bits, pause = parse_line(line)
-                bit_str = [lookup[bits[i].lower()] for i in range(0, len(bits))]
+                bit_str = [lookup[bits[i].lower()] for i in range(len(bits))]
                 protocol.messages.append(
                     Message.from_plain_bits_str("".join(bit_str), pause=pause)
                 )

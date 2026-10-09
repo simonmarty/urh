@@ -326,7 +326,7 @@ class SimulatorConfiguration(QObject):
         elif xml_tag.tag in ("message", "label", "checksum_label"):
             return None
         else:
-            raise ValueError("Unknown simulator item tag: {}".format(xml_tag.tag))
+            raise ValueError(f"Unknown simulator item tag: {xml_tag.tag}")
 
         for child_tag in xml_tag:
             child = self.load_item_from_xml(child_tag, message_types)

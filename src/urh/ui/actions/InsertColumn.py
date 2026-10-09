@@ -19,7 +19,7 @@ class InsertColumn(QUndoCommand):
 
         self.saved_messages = {}
 
-        self.setText("Insert column at {0:d}".format(index))
+        self.setText(f"Insert column at {index:d}")
 
     def redo(self):
         for i in self.rows:

@@ -2,7 +2,7 @@ from urh.signalprocessing.Message import Message
 from urh.signalprocessing.Participant import Participant
 
 
-class Transcript(object):
+class Transcript:
     FORMAT = "{0} ({1}->{2}): {3}"
 
     def __init__(self):
@@ -29,7 +29,7 @@ class Transcript(object):
             return result
 
         rng = (
-            range(0, len(self.__data))
+            range(len(self.__data))
             if all_rounds
             else range(len(self.__data) - 1, len(self.__data))
         )

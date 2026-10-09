@@ -16,7 +16,7 @@ def main():
             "setup.py",
             "build_ext",
             "--inplace",
-            "-j{}".format(os.cpu_count()),
+            f"-j{os.cpu_count()}",
         ]
     )
     return rc

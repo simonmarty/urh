@@ -54,7 +54,7 @@ class SpectrogramGraphicView(ZoomableGraphicView):
 
         if self.something_is_selected:
             filter_bw = Filter.read_configured_filter_bw()
-            text = self.tr("Apply bandpass filter (filter bw={0:n})".format(filter_bw))
+            text = self.tr(f"Apply bandpass filter (filter bw={filter_bw:n})")
             create_from_frequency_selection = menu.addAction(text)
             create_from_frequency_selection.triggered.connect(
                 self.on_create_from_frequency_selection_triggered
@@ -71,7 +71,7 @@ class SpectrogramGraphicView(ZoomableGraphicView):
                 cancel_button = "Esc"
 
             create_from_frequency_selection.setToolTip(
-                "You can abort filtering with <b>{}</b>.".format(cancel_button)
+                f"You can abort filtering with <b>{cancel_button}</b>."
             )
 
         configure_filter_bw = menu.addAction(self.tr("Configure filter bandwidth..."))

@@ -60,7 +60,7 @@ class FuzzingTableModel(QAbstractTableModel):
                 if self.proto_view == 0:
                     return self.data[i][j]
                 elif self.proto_view == 1:
-                    return "{0:x}".format(int(self.data[i][4 * j : 4 * (j + 1)], 2))
+                    return f"{int(self.data[i][4 * j : 4 * (j + 1)], 2):x}"
                 elif self.proto_view == 2:
                     return chr(int(self.data[i][8 * j : 8 * (j + 1)], 2))
 
@@ -100,12 +100,12 @@ class FuzzingTableModel(QAbstractTableModel):
             self.update()
         elif self.proto_view == 1 and value in hex_chars:
             l = list(self.data[i])
-            l[4 * j : 4 * (j + 1)] = "{0:04b}".format(int(value, 16))
+            l[4 * j : 4 * (j + 1)] = f"{int(value, 16):04b}"
             self.data[i] = "".join(l)
             self.update()
         elif self.proto_view == 2 and len(value) == 1:
             l = list(self.data[i])
-            l[8 * j : 8 * (j + 1)] = "{0:08b}".format(ord(value))
+            l[8 * j : 8 * (j + 1)] = f"{ord(value):08b}"
             self.data[i] = "".join(l)
             self.update()
 

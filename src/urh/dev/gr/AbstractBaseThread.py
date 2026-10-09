@@ -1,7 +1,6 @@
 import os
 import socket
 import sys
-import tempfile
 import time
 from queue import Queue, Empty
 from subprocess import Popen, PIPE

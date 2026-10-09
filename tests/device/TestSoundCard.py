@@ -2,12 +2,9 @@ import numpy as np
 
 
 def test_sounddevice_lib():
-    import time
-
-    import numpy as np
     from sounddevice import InputStream, OutputStream, sleep as sd_sleep
 
-    """ 
+    """
     if no portaudio installed:
     Traceback (most recent call last):
   File "TestSoundCard.py", line 42, in <module>
@@ -27,7 +24,7 @@ def test_sounddevice_lib():
     current_rx = 0
     current_tx = 0
 
-    def rx_callback(indata: np.ndarray, frames: int, time, status):
+    def rx_callback(indata: np.ndarray, frames: int, time_info, status):
         global current_rx
         if status:
             print(status)
@@ -35,7 +32,7 @@ def test_sounddevice_lib():
         rx_buffer[current_rx : current_rx + frames] = indata
         current_rx += frames
 
-    def tx_callback(outdata: np.ndarray, frames: int, time, status):
+    def tx_callback(outdata: np.ndarray, frames: int, time_info, status):
         global current_tx
         if status:
             print(status)
@@ -72,7 +69,7 @@ def test_pyaudio():
 
     frames = []
 
-    for i in range(0, 100):
+    for i in range(100):
         data = stream.read(CHUNK)
         frames.append(data)
 

@@ -37,7 +37,7 @@ class MessageTypeButtonDelegate(QStyledItemDelegate):
         painter = QPainter(pixmap)
         w, h = pixmap.width(), pixmap.height()
 
-        painter.fillRect(0, 0, w, h, QBrush((QColor(0, 0, 200, 255))))
+        painter.fillRect(0, 0, w, h, QBrush(QColor(0, 0, 200, 255)))
 
         pen = QPen(QColor("white"))
         pen.setWidth(2)

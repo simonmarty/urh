@@ -30,8 +30,8 @@ class TestHackRF(unittest.TestCase):
 
     def test_fromstring(self):
         buffer = b"\xfe\xfe\xfe\xfe\xfe\xfe\xfe\xfd\xff\xfd\xfe\xfe\xfe\xfe\xfe\xfe\xfe\xfe\xfd\xfe\xfd\xfe\xff\xfe\xfe\xfe\xfe\xfe\xfe\xfe\xfd\xfe"
-        r = np.empty(len(buffer) // 2, dtype=np.float32)
-        i = np.empty(len(buffer) // 2, dtype=np.float32)
+        np.empty(len(buffer) // 2, dtype=np.float32)
+        np.empty(len(buffer) // 2, dtype=np.float32)
         c = np.empty(len(buffer) // 2, dtype=np.complex64)
 
         # dtype  =
@@ -68,10 +68,10 @@ class TestHackRF(unittest.TestCase):
         i = 0
         TIME_TOTAL = 5
         while i < TIME_TOTAL:
-            print("{0}/{1}".format(i + 1, TIME_TOTAL))
+            print(f"{i + 1}/{TIME_TOTAL}")
             time.sleep(1)
             i += 1
-        print("{0:,}".format(hfc.current_recv_index))
+        print(f"{hfc.current_recv_index:,}")
         hfc.received_data.tofile(os.path.join(tempfile.gettempdir(), "hackrf.complex"))
         print("Wrote Data")
         hfc.stop_rx_mode("Finished test")
@@ -87,11 +87,7 @@ class TestHackRF(unittest.TestCase):
         )
         while not hfc.sending_finished:
             print(
-                "Repeat: {0} Current Sample: {1}/{2}".format(
-                    hfc.current_sending_repeat + 1,
-                    hfc.current_sent_sample,
-                    len(hfc.samples_to_send),
-                )
+                f"Repeat: {hfc.current_sending_repeat + 1} Current Sample: {hfc.current_sent_sample}/{len(hfc.samples_to_send)}"
             )
             time.sleep(1)
         hfc.stop_tx_mode("Test finished")

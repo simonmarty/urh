@@ -28,7 +28,7 @@ class TestCRC(unittest.TestCase):
 
         for value, expect in zip(bitstr, expected):
             nv = ""
-            for i in range(0, len(value)):
+            for i in range(len(value)):
                 if value[i] == "1":
                     nv += "0"
                 else:
@@ -258,7 +258,7 @@ class TestCRC(unittest.TestCase):
         for j in polynomials:
             c.polynomial = c.choose_polynomial(j)
             inpt = "1"
-            for i in range(0, 32):
+            for i in range(32):
                 val = c.bit2int(c.crc(c.str2bit(inpt)))
                 self.assertEqual(val, crcs[j])
                 inpt = "0" + inpt
@@ -299,7 +299,7 @@ class TestCRC(unittest.TestCase):
 
         t1 = 0
         runs = 100
-        for i in range(0, runs):
+        for i in range(runs):
             t = time.time()
             result = c.bruteforce_parameters_and_data_range(
                 c.str2arr(inpt), len(inpt) - len(vrfy_crc) - 1

@@ -17,7 +17,7 @@ def __get_qt_settings():
 
     try:
         __qt_settings.fileName()
-    except:
+    except Exception:
         __qt_settings = QSettings(
             QSettings.Format.IniFormat, QSettings.Scope.UserScope, "urh", "urh"
         )
@@ -203,11 +203,9 @@ def get_receive_buffer_size(
     # Do not let it allocate too much memory on 32 bit
     if 8 * 2 * num_samples > sys.maxsize:
         num_samples = sys.maxsize // (8 * 2 * 1.5)
-        logger.info("Correcting buffer size to {}".format(num_samples))
+        logger.info(f"Correcting buffer size to {num_samples}")
 
     logger.info(
-        "Allocate receive buffer with {0}B".format(
-            Formatter.big_value_with_suffix(num_samples * 8)
-        )
+        f"Allocate receive buffer with {Formatter.big_value_with_suffix(num_samples * 8)}B"
     )
     return int(num_samples)

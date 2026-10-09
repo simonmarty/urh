@@ -1,5 +1,3 @@
-import math
-
 from urh.signalprocessing.Signal import Signal
 from urh.ui.painting.SceneManager import SceneManager
 

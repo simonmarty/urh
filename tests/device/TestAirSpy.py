@@ -2,7 +2,7 @@ import unittest
 
 import time
 
-from multiprocessing import Queue, Pipe
+from multiprocessing import Pipe
 
 import numpy as np
 

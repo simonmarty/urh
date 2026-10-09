@@ -59,7 +59,7 @@ class SDRPlay(Device):
     def device_dict_to_string(d):
         hw_ver = d["hw_version"]
         serial = d["serial"]
-        return "RSP {} ({})".format(hw_ver, serial)
+        return f"RSP {hw_ver} ({serial})"
 
     @property
     def device_parameters(self):
@@ -97,14 +97,7 @@ class SDRPlay(Device):
         )
 
         ctrl_connection.send(
-            "Start RX MODE with \n  FREQUENCY={}\n  SAMPLE_RATE={}\n  BANDWIDTH={}\n  GAIN={}\n  IF_GAIN={}:{}".format(
-                cls.sdrplay_initial_freq,
-                cls.sdrplay_initial_sample_rate,
-                cls.sdrplay_initial_bandwidth,
-                cls.sdrplay_initial_gain,
-                cls.sdrplay_initial_if_gain,
-                ret,
-            )
+            f"Start RX MODE with \n  FREQUENCY={cls.sdrplay_initial_freq}\n  SAMPLE_RATE={cls.sdrplay_initial_sample_rate}\n  BANDWIDTH={cls.sdrplay_initial_bandwidth}\n  GAIN={cls.sdrplay_initial_gain}\n  IF_GAIN={cls.sdrplay_initial_if_gain}:{ret}"
         )
 
         return ret
@@ -124,9 +117,7 @@ class SDRPlay(Device):
                 )
             )
             ret = sdrplay.set_device_index(device_number)
-            ctrl_connection.send(
-                "SET DEVICE NUMBER to {}:{}".format(device_number, ret)
-            )
+            ctrl_connection.send(f"SET DEVICE NUMBER to {device_number}:{ret}")
         except (TypeError, ValueError) as e:
             logger.exception(e)
             return False

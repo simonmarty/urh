@@ -1,9 +1,6 @@
-import array
-
 import numpy as np
 
 from tests.awre.AWRETestCase import AWRETestCase
-from urh.awre.CommonRange import ChecksumRange
 from urh.awre.FormatFinder import FormatFinder
 from urh.awre.MessageTypeBuilder import MessageTypeBuilder
 from urh.awre.ProtocolGenerator import ProtocolGenerator
@@ -11,7 +8,6 @@ from urh.awre.engines.ChecksumEngine import ChecksumEngine
 from urh.signalprocessing.FieldType import FieldType
 from urh.util import util
 from urh.util.GenericCRC import GenericCRC
-from urh.cythonext import util as c_util
 
 
 class TestChecksumEngine(AWRETestCase):
@@ -96,10 +92,8 @@ class TestChecksumEngine(AWRETestCase):
         num_messages = 5
 
         for i in range(num_messages):
-            pg.generate_message(data="{0:032b}".format(i), message_type=mb.message_type)
-            pg.generate_message(
-                data="{0:016b}".format(i), message_type=mb2.message_type
-            )
+            pg.generate_message(data=f"{i:032b}", message_type=mb.message_type)
+            pg.generate_message(data=f"{i:016b}", message_type=mb2.message_type)
 
         # self.save_protocol("crc16_test", pg)
         self.clear_message_types(pg.protocol.messages)

@@ -8,7 +8,7 @@ class TestRTLSDRTCP(unittest.TestCase):
         error = 0
         sdr = RTLSDRTCP(0, 0, 0, device_number=0)
         sdr.open(sdr.child_ctrl_conn)
-        if sdr.socket_is_open == False:
+        if not sdr.socket_is_open:
             error += 1
         if sdr.set_parameter("centerFreq", 927000000, sdr.child_ctrl_conn):
             error += 1

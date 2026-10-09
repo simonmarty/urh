@@ -24,7 +24,7 @@ class Formatter:
             suffix = ""
             value = time_in_seconds
 
-        result = locale.format_string("%.{0}f ".format(decimals) + suffix, value)
+        result = locale.format_string(f"%.{decimals}f " + suffix, value)
         if append_seconds:
             result += "s"
         if remove_spaces:
@@ -34,7 +34,7 @@ class Formatter:
 
     @staticmethod
     def big_value_with_suffix(value: float, decimals=3, strip_zeros=True) -> str:
-        fmt_str = "%.{0:d}f".format(decimals)
+        fmt_str = f"%.{decimals:d}f"
         suffix = ""
         if abs(value) >= 1e9:
             suffix = "G"
@@ -59,8 +59,6 @@ class Formatter:
             return dtype(str_val)
         except (ValueError, TypeError):
             logger.warning(
-                "The {0} is not a valid {1}, assuming {2}".format(
-                    str_val, str(dtype), str(default)
-                )
+                f"The {str_val} is not a valid {str(dtype)}, assuming {str(default)}"
             )
             return default

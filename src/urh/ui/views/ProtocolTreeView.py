@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QItemSelection, pyqtSlot
-from PyQt6.QtCore import pyqtSignal, QItemSelectionModel, Qt
+from PyQt6.QtCore import pyqtSignal, QItemSelectionModel
 from PyQt6.QtGui import QContextMenuEvent, QDropEvent, QIcon
 from PyQt6.QtWidgets import QTreeView, QAbstractItemView, QMenu
 

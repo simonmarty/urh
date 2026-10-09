@@ -23,7 +23,7 @@ def pyfftw_fft(array):
     import pyfftw
 
     pyfftw.interfaces.cache.enable()
-    fft_a = pyfftw.interfaces.numpy_fft.fft(array, threads=2, overwrite_input=True)
+    pyfftw.interfaces.numpy_fft.fft(array, threads=2, overwrite_input=True)
 
 
 if __name__ == "__main__":
@@ -46,7 +46,5 @@ if __name__ == "__main__":
     pyfftw_time = time.time() - pyfftw_time
 
     print(
-        "{0}\t{1}\t\t\t{2:.4f}\t{3:.4f}\t{4:.4f}".format(
-            1024, iterations, numpy_time, scipy_time, pyfftw_time
-        )
+        f"{1024}\t{iterations}\t\t\t{numpy_time:.4f}\t{scipy_time:.4f}\t{pyfftw_time:.4f}"
     )

@@ -36,7 +36,7 @@ class SignalDetailsDialog(QDialog):
             self.ui.lFileCreated.setText("-")
 
         self.ui.lblSamplesTotal.setText(
-            "{0:n}".format(self.signal.num_samples).replace(",", " ")
+            f"{self.signal.num_samples:n}".replace(",", " ")
         )
         self.ui.dsb_sample_rate.setValue(self.signal.sample_rate)
         self.set_duration()
@@ -45,13 +45,11 @@ class SignalDetailsDialog(QDialog):
             self.on_dsb_sample_rate_value_changed
         )
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
     def closeEvent(self, event: QCloseEvent):
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
         super().closeEvent(event)
 
     @pyqtSlot(float)

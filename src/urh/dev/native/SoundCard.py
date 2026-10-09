@@ -12,7 +12,7 @@ from urh.util.Logger import logger
 class SoundCard(Device):
     DEVICE_LIB = pyaudio
     ASYNCHRONOUS = False
-    DEVICE_METHODS = dict()
+    DEVICE_METHODS = {}
 
     CHUNK_SIZE = 1024
     SYNC_TX_CHUNK_SIZE = 2 * CHUNK_SIZE

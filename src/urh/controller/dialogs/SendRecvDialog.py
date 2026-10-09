@@ -2,8 +2,8 @@ import locale
 import time
 
 from PyQt6.QtCore import pyqtSlot, QTimer, pyqtSignal, Qt
-from PyQt6.QtGui import QCloseEvent, QTransform
-from PyQt6.QtWidgets import QDialog, QGraphicsView
+from PyQt6.QtGui import QCloseEvent
+from PyQt6.QtWidgets import QDialog
 
 from urh import settings
 from urh.controller.widgets.DeviceSettingsWidget import DeviceSettingsWidget
@@ -73,7 +73,7 @@ class SendRecvDialog(QDialog):
 
         self.timer = QTimer(self)
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
         self.ui.splitter.setSizes([int(0.4 * self.width()), int(0.6 * self.width())])
@@ -276,9 +276,7 @@ class SendRecvDialog(QDialog):
 
         if self.is_rx and self.device.data is not None and len(self.device.data) > 0:
             self.ui.labelReceiveBufferFull.setText(
-                "{0}%".format(
-                    int(100 * self.device.current_index / len(self.device.data))
-                )
+                f"{int(100 * self.device.current_index / len(self.device.data))}%"
             )
 
         if self.device.current_index == 0:
@@ -320,9 +318,7 @@ class SendRecvDialog(QDialog):
             logger.debug("Successfully cleaned up device")
             self.device_settings_widget.emit_device_parameters_changed()
 
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
 
         if self.device is not None:
             self.device.free_data()

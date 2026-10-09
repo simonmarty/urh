@@ -55,7 +55,7 @@ class FuzzingDialog(QDialog):
 
         self.create_connects()
         self.restoreGeometry(
-            settings.read("{}/geometry".format(self.__class__.__name__), type=bytes)
+            settings.read(f"{self.__class__.__name__}/geometry", type=bytes)
         )
 
     @property
@@ -184,9 +184,7 @@ class FuzzingDialog(QDialog):
         self.set_add_spinboxes_maximum_on_label_change()
 
     def closeEvent(self, event: QCloseEvent):
-        settings.write(
-            "{}/geometry".format(self.__class__.__name__), self.saveGeometry()
-        )
+        settings.write(f"{self.__class__.__name__}/geometry", self.saveGeometry())
         super().closeEvent(event)
 
     @pyqtSlot(int)

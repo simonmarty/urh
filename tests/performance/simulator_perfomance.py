@@ -30,7 +30,7 @@ def receive(port, current_index, target_index, elapsed):
     s.listen(1)
 
     conn, addr = s.accept()
-    logger.debug("Receiver got connection from address:".format(addr))
+    logger.debug("Receiver got connection from address:")
 
     start = False
     while True:
@@ -176,7 +176,7 @@ class TestSimulatorPerfomance(QtTestCase):
         time.sleep(0.5)
         receive_process.join(15)
 
-        logger.info("PROCESS TIME: {0:.2f}ms".format(elapsed.value))
+        logger.info(f"PROCESS TIME: {elapsed.value:.2f}ms")
 
         # self.assertEqual(current_index.value, target_num_samples)
         self.assertLess(elapsed.value, 200)

@@ -1,13 +1,11 @@
 import math
 
 import numpy as np
-from PyQt6.QtCore import QRectF
 from PyQt6.QtGui import QPen, QFont, QTransform, QFontMetrics
 from PyQt6.QtWidgets import (
     QGraphicsScene,
     QGraphicsRectItem,
     QGraphicsSceneDragDropEvent,
-    QGraphicsSimpleTextItem,
 )
 
 from urh import settings

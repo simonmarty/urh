@@ -21,12 +21,11 @@ Darwin)
         file /usr/local/lib/libiio.dylib
         otool -L /usr/local/lib/libiio.dylib
         sudo cp /Library/Frameworks/iio.framework/Versions/0.23/Headers/iio.h /usr/local/include
-
-        wget -nv https://www.sdrplay.com/software/SDRplay_RSP_API-MacOSX-2.13.2.pkg
-        sudo installer -pkg SDRplay_RSP_API-MacOSX-2.13.2.pkg -target /
     else
-        echo "Skipping libiio and SDRplay: no arm64 installers are published."
+        echo "Skipping libiio: no arm64 installer is published."
     fi
+
+    echo "Skipping SDRplay: no API 2.x package is published any more."
     ;;
 *)
     echo "No native SDR libraries to install on $(uname -s)."

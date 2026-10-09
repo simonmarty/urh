@@ -67,7 +67,7 @@ parts:
       - build-essential
 
   urh:
-    after: [sdrplay, alsa-mixin]
+    after: [alsa-mixin]
     plugin: uv
     source: .
     build-snaps: [astral-uv]
@@ -128,21 +128,6 @@ parts:
       - libasound2-plugins
       - locales-all
       - xdg-user-dirs
-
-  sdrplay:
-    plugin: dump
-    source: /lib
-    stage: [libmirsdrapi-rsp.so.2.13]
-    override-build: |
-      wget http://www.sdrplay.com/software/SDRplay_RSP_API-Linux-2.13.1.run -O sdrplay.run
-      bash sdrplay.run --tar xf
-      cp mirsdrapi-rsp.h /usr/include
-      cp x86_64/* /lib
-      cp x86_64/* .
-      ln -sf /lib/libmirsdrapi-rsp.so.2.13 /lib/libmirsdrapi-rsp.so
-      craftctl default
-    build-packages:
-      - wget
 
   bladerf-fpga:
     plugin: dump

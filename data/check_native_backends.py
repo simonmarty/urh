@@ -15,21 +15,27 @@ if sys.platform == "win32":
         os.environ["PATH"] = os.environ.get("PATH", "") + os.pathsep + shared_lib_dir
         print("PATH updated")
 
-for sdr in (
+REQUIRED = (
     "AirSpy",
     "BladeRF",
     "HackRF",
     "RTLSDR",
     "LimeSDR",
     "PlutoSDR",
-    "SDRPlay",
     "USRP",
-):
+)
+
+OPTIONAL = ("SDRPlay",)
+
+for sdr in REQUIRED + OPTIONAL:
     try:
         importlib.import_module(f".{sdr.lower()}", "urh.dev.native.lib")
         print("{:<10} \033[92mSUCCESS\033[0m".format(sdr + ":"))
     except ImportError as e:
-        print("{:<10} \033[91mFAILURE\033[0m ({})".format(sdr + ":", e))
-        rc = 1
+        if sdr in OPTIONAL:
+            print("{:<10} \033[93mABSENT\033[0m  ({})".format(sdr + ":", e))
+        else:
+            print("{:<10} \033[91mFAILURE\033[0m ({})".format(sdr + ":", e))
+            rc = 1
 
 sys.exit(rc)

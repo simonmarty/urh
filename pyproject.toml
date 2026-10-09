@@ -98,6 +98,7 @@ test-command = "python -c \"import urh.cythonext.signal_functions, urh.cythonext
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
+environment = { LD_LIBRARY_PATH = "/usr/local/lib64:/usr/local/lib:/usr/lib64" }
 manylinux-x86_64-image = "jopohl/urh_manylinux2_34_x86_64:2025.12.07-2"
 
 [tool.cibuildwheel.macos]
@@ -106,6 +107,7 @@ before-all = "data/ci/install_sdr_libs.sh"
 
 [tool.cibuildwheel.windows]
 archs = ["native"]
+repair-wheel-command = ""
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

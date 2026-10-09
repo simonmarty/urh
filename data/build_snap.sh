@@ -6,7 +6,6 @@ echo "Copy snapcraft.yaml to base directory"
 cd $DIR
 cp snapcraft.yaml ..
 cd ..
-sed -i "s/version\: git/version\: $(python3 src/urh/version.py)/" snapcraft.yaml
 
 mkdir -p snap/gui
 cp data/icons/appicon.png snap/gui/urh.png 

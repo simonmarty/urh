@@ -989,6 +989,9 @@ lint = [
     { name = "mypy" },
     { name = "ruff" },
 ]
+snap = [
+    { name = "pyaudio" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -1016,3 +1019,4 @@ lint = [
     { name = "mypy", specifier = "==1.18.2" },
     { name = "ruff", specifier = "==0.16.10" },
 ]
+snap = [{ name = "pyaudio" }]

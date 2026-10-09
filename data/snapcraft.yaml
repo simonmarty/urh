@@ -1,6 +1,5 @@
 name: urh
 title: Universal Radio Hacker
-version: git
 summary: Investigate Wireless Protocols Like A Boss
 description: |
   The Universal Radio Hacker (URH) is a complete suite for wireless protocol investigation with native support for many common **Software Defined Radios**.
@@ -21,51 +20,33 @@ description: |
 
 icon: data/icons/appicon.png
 
+adopt-info: urh
 
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
-base: core18
+base: core24
 
-plugs: # plugs for theming, font settings, cursor and to use gtk3 file chooser
-  gtk-3-themes:
-    interface: content
-    target: $SNAP/data-dir/themes
-    default-provider: gtk-common-themes:gtk-3-themes
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes:icon-themes
-  sound-themes:
-    interface: content
-    target: $SNAP/data-dir/sounds
-    default-provider: gtk-common-themes:sounds-themes
-
+platforms:
+  amd64:
 
 apps:
   urh:
-    adapter: full
-    command: snap/command-chain/alsa-launch desktop-launch $SNAP/bin/urh
+    extensions: [gnome]
+    command-chain: [snap/command-chain/alsa-launch]
+    command: bin/urh
     plugs:
-      - desktop
-      - desktop-legacy
-      - wayland
-      - x11
-      - unity7
-      - gsettings
       - home
-      - opengl
       - raw-usb
       - audio-playback
       - audio-record
       - network
     environment:
-      QT_QPA_PLATFORMTHEME: gtk3
       LD_PRELOAD: $SNAP/lib/semwraplib.so
       BLADERF_SEARCH_DIR: $SNAP/bladefpgas
 
 layout:
-  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/alsa-lib:
-    bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/alsa-lib
+  /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/alsa-lib:
+    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/alsa-lib
 
 parts:
   alsa-mixin:
@@ -79,97 +60,32 @@ parts:
     plugin: nil
     source: data
     override-build: |
-      snapcraftctl build
-      mkdir -p $SNAPCRAFT_PART_INSTALL/lib
-      gcc -g -O0 -Wall -Wstrict-prototypes -fPIC -shared semwraplib.c -o $SNAPCRAFT_PART_INSTALL/lib/semwraplib.so -ldl
+      craftctl default
+      mkdir -p $CRAFT_PART_INSTALL/lib
+      gcc -g -O0 -Wall -Wstrict-prototypes -fPIC -shared semwraplib.c -o $CRAFT_PART_INSTALL/lib/semwraplib.so -ldl
     build-packages:
       - build-essential
-
-  desktop-qt5:
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: qt
-    plugin: make
-    make-parameters: ["FLAVOR=qt5"]
-    build-packages:
-      - build-essential
-      - qtbase5-dev
-      - dpkg-dev
-    stage-packages:
-      - libxkbcommon0
-      - ttf-ubuntu-font-family
-      - dmz-cursor-theme
-      - light-themes
-      - libgstreamer-plugins-base1.0-0
-      - adwaita-icon-theme
-      - gnome-themes-standard
-      - shared-mime-info
-      - libgomp1
-      - libqt5gui5
-      - libgdk-pixbuf2.0-0
-      - libqt5svg5 # for loading icon themes which are svg
-      - try: [appmenu-qt5] # not available on core18
-      - locales-all
-      - xdg-user-dirs
-      - fcitx-frontend-qt5
-      - libatk1.0-0
-      - libgtk2.0-0
-      - libxcomposite1
-      - libxcursor1
-      - libxinerama1
-      - libxrandr2
-      - libasyncns0
-      - libatk-bridge2.0-0
-      - libatspi2.0-0
-      - libcairo-gobject2
-      - libepoxy0
-      - libflac8
-      - libgtk-3-0
-      - libogg0
-      - libpulse0
-      - libsndfile1
-      - libvorbis0a
-      - libvorbisenc2
-      - libwayland-cursor0
-      - libwayland-egl1
-      - libodbc1
-      - libpq5
-      - libpulse-mainloop-glib0
-      - libspeechd2
-      - python3
-      - python3-pyqt6
-      - python3-pyaudio
-      - dbus
-      - qtwayland5
-      - qt5-gtk-platformtheme
-      - libqt5x11extras5
-      - locales
-      - libcanberra-gtk3-module
-      - libairspy-dev
-      - libhackrf-dev
-      - libiio-dev
-      - liblimesuite-dev
-      - librtlsdr-dev
-      - libuhd-dev
-      - libc-bin
-      - libasound2
-      - libasound2-plugins
-      - python3-distutils
 
   urh:
-    after: [desktop-qt5, sdrplay, alsa-mixin]
-    plugin: python
-    requirements: [data/requirements.txt]
+    after: [sdrplay, alsa-mixin]
+    plugin: uv
     source: .
+    build-snaps: [astral-uv]
+    uv-groups: [snap]
+    override-pull: |
+      craftctl default
+      craftctl set version="$(python3 src/urh/version.py)"
     override-build: |
       git clone https://github.com/Nuand/bladeRF.git
       cd bladeRF/host
       mkdir build
-      cmake -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL ..
+      cmake -DCMAKE_INSTALL_PREFIX=$CRAFT_PART_INSTALL ..
       make -j$(nproc)
       make install
       cmake -DCMAKE_INSTALL_PREFIX=/usr ..
       make install
-      snapcraftctl build
+      cd $CRAFT_PART_SRC
+      craftctl default
     build-packages:
       - libairspy-dev
       - libhackrf-dev
@@ -177,11 +93,41 @@ parts:
       - liblimesuite-dev
       - librtlsdr-dev
       - libuhd-dev
+      - portaudio19-dev
       - wget
       - execstack
       - build-essential
       - cmake
       - pkg-config
+    stage-packages:
+      - libairspy-dev
+      - libhackrf-dev
+      - libiio-dev
+      - liblimesuite-dev
+      - librtlsdr-dev
+      - libuhd-dev
+      - libgomp1
+      - libportaudio2
+      - libxcb-cursor0
+      - libxcb-icccm4
+      - libxcb-image0
+      - libxcb-keysyms1
+      - libxcb-randr0
+      - libxcb-render-util0
+      - libxcb-shape0
+      - libxcb-sync1
+      - libxcb-xfixes0
+      - libxcb-xinerama0
+      - libxkbcommon-x11-0
+      - libegl1
+      - libglx0
+      - libfontconfig1
+      - libdbus-1-3
+      - libmd4c0
+      - libasound2t64
+      - libasound2-plugins
+      - locales-all
+      - xdg-user-dirs
 
   sdrplay:
     plugin: dump
@@ -194,14 +140,18 @@ parts:
       cp x86_64/* /lib
       cp x86_64/* .
       ln -sf /lib/libmirsdrapi-rsp.so.2.13 /lib/libmirsdrapi-rsp.so
-      snapcraftctl build
+      craftctl default
+    build-packages:
+      - wget
 
   bladerf-fpga:
     plugin: dump
     source: .
     override-build: |
-      snapcraftctl build
-      wget https://www.nuand.com/fpga/v0.11.0/hostedxA4.rbf  -P $SNAPCRAFT_PART_INSTALL/bladefpgas
-      wget https://www.nuand.com/fpga/v0.11.0/hostedxA9.rbf  -P $SNAPCRAFT_PART_INSTALL/bladefpgas
-      wget https://www.nuand.com/fpga/v0.11.0/hostedx40.rbf  -P $SNAPCRAFT_PART_INSTALL/bladefpgas
-      wget https://www.nuand.com/fpga/v0.11.0/hostedx115.rbf -P $SNAPCRAFT_PART_INSTALL/bladefpgas
+      craftctl default
+      wget https://www.nuand.com/fpga/v0.11.0/hostedxA4.rbf  -P $CRAFT_PART_INSTALL/bladefpgas
+      wget https://www.nuand.com/fpga/v0.11.0/hostedxA9.rbf  -P $CRAFT_PART_INSTALL/bladefpgas
+      wget https://www.nuand.com/fpga/v0.11.0/hostedx40.rbf  -P $CRAFT_PART_INSTALL/bladefpgas
+      wget https://www.nuand.com/fpga/v0.11.0/hostedx115.rbf -P $CRAFT_PART_INSTALL/bladefpgas
+    build-packages:
+      - wget

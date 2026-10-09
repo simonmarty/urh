@@ -40,7 +40,7 @@ def profile(func):
 
 def set_icon_theme():
     if sys.platform != "linux" or settings.read("icon_theme_index", 0, int) == 0:
-        # noinspection PyUnresolvedReferences
+        import urh.ui.xtra_icons_rc  # noqa: F401
 
         QIcon.setThemeName("oxy")
     else:

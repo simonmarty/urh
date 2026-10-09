@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 
+from PyQt6.QtCore import QDir
 from PyQt6.QtGui import QIcon
 from tests.QtTestCase import QtTestCase
 from tests.utils_testing import get_path_for_data_file
@@ -23,6 +24,7 @@ class TestUtil(QtTestCase):
         util.set_icon_theme()
 
         self.assertEqual(QIcon.themeName(), "oxy")
+        self.assertIn("oxy", QDir(":/icons").entryList())
 
         settings.write("icon_theme_index", 1)
         util.set_icon_theme()
@@ -159,21 +161,6 @@ class TestUtil(QtTestCase):
 
         util.set_shared_library_path()
 
-        # noinspection PyUnresolvedReferences
-
-        # noinspection PyUnresolvedReferences
-
-        # noinspection PyUnresolvedReferences
-
-        # noinspection PyUnresolvedReferences
-
-        # noinspection PyUnresolvedReferences
-
-        # noinspection PyUnresolvedReferences
-
-        # noinspection PyUnresolvedReferences
-
         if sys.platform != "darwin":
-            # noinspection PyUnresolvedReferences
             pass
         self.assertTrue(True)

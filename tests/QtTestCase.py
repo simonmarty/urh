@@ -12,7 +12,7 @@ from tests.utils_testing import write_settings, get_path_for_data_file
 from urh.controller.MainController import MainController
 from urh.signalprocessing.ProtocolSniffer import ProtocolSniffer
 
-# noinspection PyUnresolvedReferences
+import urh.ui.urh_rc  # noqa: F401
 
 faulthandler.enable()
 

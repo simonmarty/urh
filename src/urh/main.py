@@ -10,7 +10,7 @@ from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QPalette, QIcon, QColor
 from PyQt6.QtWidgets import QApplication, QWidget, QStyleFactory
 
-# noinspection PyUnresolvedReferences
+import urh.ui.urh_rc  # noqa: F401
 
 try:
     locale.setlocale(locale.LC_ALL, "")

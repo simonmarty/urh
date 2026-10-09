@@ -320,7 +320,9 @@ class ProjectManager(QObject):
         self.project_file = os.path.join(self.project_path, settings.PROJECT_FILE)
         self.main_controller.show_project_settings()
 
-    def write_signal_information_to_project_file(self, signal: Signal, tree=None):
+    def write_signal_information_to_project_file(
+        self, signal: Signal, messages=None, tree=None
+    ):
         if self.project_file is None or signal is None or len(signal.filename) == 0:
             return
 
@@ -362,13 +364,12 @@ class ProjectManager(QObject):
         signal_tag.set("bits_per_symbol", str(signal.bits_per_symbol))
         signal_tag.set("costas_loop_bandwidth", str(signal.costas_loop_bandwidth))
 
-        # NOTE: this element is intentionally left empty. The loop that used to
-        # populate it iterated over the freshly created (empty) element rather
-        # than over any message source, so it never ran. Signal has no
-        # `messages` attribute, so there is no correct one-line repair --
-        # read_signal_information_from_project_file() still looks for <message>
-        # children here, so per-message state is not persisted by this path.
-        ET.SubElement(signal_tag, "messages")
+        for stale_messages_tag in signal_tag.findall("messages"):
+            signal_tag.remove(stale_messages_tag)
+
+        messages_tag = ET.SubElement(signal_tag, "messages")
+        for message in messages or []:
+            messages_tag.append(message.to_xml())
 
         tree.write(self.project_file)
 
@@ -434,7 +435,12 @@ class ProjectManager(QObject):
         for i, sf in enumerate(
             self.main_controller.signal_tab_controller.signal_frames
         ):
-            self.write_signal_information_to_project_file(sf.signal, tree=tree)
+            protocol = self.main_controller.signal_protocol_dict.get(sf)
+            self.write_signal_information_to_project_file(
+                sf.signal,
+                messages=protocol.messages if protocol is not None else None,
+                tree=tree,
+            )
             try:
                 pf = self.main_controller.signal_protocol_dict[sf]
                 filename = pf.filename

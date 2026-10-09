@@ -475,13 +475,15 @@ class MainController(QMainWindow):
 
     def close_signal_frame(self, signal_frame: SignalFrame):
         try:
-            self.project_manager.write_signal_information_to_project_file(
-                signal_frame.signal
-            )
             try:
                 proto = self.signal_protocol_dict[signal_frame]
             except KeyError:
                 proto = None
+
+            self.project_manager.write_signal_information_to_project_file(
+                signal_frame.signal,
+                messages=proto.messages if proto is not None else None,
+            )
 
             if proto is not None:
                 self.close_protocol(proto)

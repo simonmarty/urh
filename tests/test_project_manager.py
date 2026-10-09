@@ -1,6 +1,7 @@
 import os
 import random
 import tempfile
+import xml.etree.ElementTree as ET
 
 from PyQt6.QtCore import QDir, Qt
 
@@ -76,6 +77,63 @@ class TestProjectManager(QtTestCase):
 
         self.assertEqual(self.form.signal_tab_controller.num_frames, 0)
         self.assertEqual(self.form.project_manager.project_file, None)
+
+    def test_write_and_read_participants_for_signal(self):
+        target_dir = os.path.join(
+            tempfile.gettempdir(), "urh", "signal_participants_test"
+        )
+        os.makedirs(target_dir, exist_ok=True)
+        project_file = os.path.join(target_dir, settings.PROJECT_FILE)
+        if os.path.isfile(project_file):
+            os.remove(project_file)
+        self.form.project_manager.set_project_folder(
+            target_dir, ask_for_new_project=False
+        )
+
+        alice, bob = Participant("Alice", "A"), Participant("Bob", "B")
+        self.form.project_manager.participants = [alice, bob]
+
+        self.add_signal_to_form("two_participants.complex16s")
+        frame = self.form.signal_tab_controller.signal_frames[0]
+        messages = frame.proto_analyzer.messages
+        self.assertGreater(len(messages), 2)
+
+        assigned = [alice if i % 2 == 0 else bob for i in range(len(messages))]
+        for message, participant in zip(messages, assigned):
+            message.participant = participant
+
+        project_manager = self.form.project_manager
+        project_manager.write_signal_information_to_project_file(
+            frame.signal, messages=messages
+        )
+
+        for message in messages:
+            message.participant = None
+
+        self.assertTrue(
+            project_manager.read_participants_for_signal(frame.signal, messages)
+        )
+        self.assertEqual(
+            [m.participant for m in messages],
+            assigned,
+        )
+
+        # Writing twice must not leave a stale <messages> element behind, since
+        # read_participants_for_signal() only looks at the first one.
+        messages[0].participant = bob
+        project_manager.write_signal_information_to_project_file(
+            frame.signal, messages=messages
+        )
+        tree = ET.parse(project_file)
+        for signal_tag in tree.getroot().iter("signal"):
+            self.assertEqual(len(signal_tag.findall("messages")), 1)
+
+        for message in messages:
+            message.participant = None
+        self.assertTrue(
+            project_manager.read_participants_for_signal(frame.signal, messages)
+        )
+        self.assertEqual(messages[0].participant, bob)
 
     def test_save_and_load_participants(self):
         target_dir = os.path.join(
